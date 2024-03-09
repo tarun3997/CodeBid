@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  mobile_number String    @unique
+  username      String    @unique
+  password      String
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  Profile       Profile?
+  Project       Project[]
+  Like          Like[]
+  Comment       Comment[]
+  Ratting       Ratting[]
+  following     Follow[]  @relation("UserFollowing")
+  followers     Follow[]  @relation("UserFollowers")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model Profile {
+  profile_id String  @id
+  name       String
+  gender     String?
+  bio        String?
+  profileUrl String
+  location   String
+  user       User    @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+}
+
+enum isPaid {
+  PAID
+  FREE
+}
+
+model Project {
+  project_id    String      @id @default(uuid())
+  title         String
+  description   String
+  project_Price Float?
+  isPaid        isPaid      @default(FREE)
+  creator       User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId     String
+  likes         Like[]
+  comments      Comment[]
+  ratings       Ratting[]
+  views         Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  PostImage     PostImage[]
+}
+
+model PostImage {
+  imageId   Int     @id @default(autoincrement())
+  imageUrl  String
+  project   Project @relation(fields: [projectId], references: [project_id])
+  projectId String
+}
+
+model Like {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [project_id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, projectId])
+}
+
+model Comment {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  projectId String
+  content   String
+  project   Project @relation(fields: [projectId], references: [project_id])
+  user      User    @relation(fields: [userId], references: [id])
+}
+
+model Ratting {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  projectId String
+  rating    Float
+  project   Project @relation(fields: [projectId], references: [project_id])
+  user      User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, projectId])
+}
+
+model Follow {
+  id          Int    @id @default(autoincrement())
+  follower    User   @relation("UserFollowers", fields: [followerId], references: [id])
+  followerId  String
+  following   User   @relation("UserFollowing", fields: [followingId], references: [id])
+  followingId String
+
+  @@unique([followerId, followingId])
+}

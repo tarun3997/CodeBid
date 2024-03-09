@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Lora:wght@400;500;600&family=Oswald:wght@200..700&family=Play&family=Roboto:wght@100;300;700&display=swap");
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-li li{
+    cursor: pointer;
+    display: block;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    color: #cccccc;
+}
+
+.nav-li li:hover{
+    border-bottom: 2px solid red;
+    color: #ffffff;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 5px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #17151f;
+    border-radius: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.Icon-Style{
+    color: #ffffff;
+    font-size: 20px;
+}
