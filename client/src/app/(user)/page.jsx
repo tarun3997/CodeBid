@@ -6,13 +6,12 @@ import { useRouter } from "next/navigation";
 import { FaSearch, FaBell } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ProjectCard from "@/components/projectCard";
 import ProjectShowingCard from "../../components/projectShowingCard";
 
 export default function Home() {
   const [profileImage, setProfileImage] = useState(null);
-  const [projectImage, setProjectImage] = useState(null);
   const [project, setProject]= useState([]);
+  const router = useRouter()
   useEffect(() => {
     fetchProfile();
     fetchProjects();
@@ -41,27 +40,21 @@ export default function Home() {
   
   const fetchProjects = async ()=>{
     try {
-      const profile = await axios.get("http://localhost:4000/api/get-projects",{
-       
-      });
+      const profile = await axios.get("http://localhost:4000/api/get-projects");
       
       setProject(profile.data.getProject)
-      const imageBase64 = Buffer.from(profile.data.getProject.profileUrl, "binary").toString(
-        "base64"
-      );
-      setProjectImage(`data:image/png;base64,${imageBase64}`)
+      
       
     } catch (e) {
       console.error("Error fetching user count:", e);
     }
   }
-  console.log(projectImage)
+
   
-  //   const token = localStorage.getItem('authToken');
-  //   console.log(token)
-  //     if (!token) {
-  //       router.push('/welcome');
-  //     }
+    const token = localStorage.getItem('authToken');
+      if (!token) {
+        router.push('/welcome');
+      }
   return (
     <div className="w-full flex flex-col">
       <div className="flex justify-around items-center w-full mt-4">
@@ -91,7 +84,7 @@ export default function Home() {
         <span className="text-white font-Archivo ">FEATURED POSTS</span>
         <div className="flex flex-wrap mt-4 justify-stretch gap-5">
         {project.map((projects, index)=>(
-        <ProjectShowingCard key={index} project={projects}image={projectImage} />
+        <ProjectShowingCard key={index} project={projects}/>
         ))}
         </div>
       </div>

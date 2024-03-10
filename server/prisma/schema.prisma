@@ -41,8 +41,8 @@ model Profile {
 }
 
 enum isPaid {
-  PAID
-  FREE
+  Paid
+  Free
 }
 
 model Project {
@@ -50,7 +50,7 @@ model Project {
   title         String
   description   String
   project_Price Float?
-  isPaid        isPaid      @default(FREE)
+  isPaid        isPaid      @default(Free)
   creator       User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId     String
   likes         Like[]

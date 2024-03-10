@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import Image from "next/image";
 
 
-export default function ProjectShowingCard({project, image}) {
+export default function ProjectShowingCard({project}) {
     const [isHovered, setIsHovered] = useState(false);
+
 
     return <div className="w-[23%]">
 
@@ -34,10 +35,20 @@ onMouseLeave={() => setIsHovered(false)}
 </div>
     <div className="flex mt-2 items-center justify-between">
       <div className="flex items-center">
-        <Image alt="profile" src={image}
+        {/* <Image alt="profile" src={`http://localhost:4000${project.profileUrl}`}
         width={7}
         height={7}
-        className="w-7 h-7 rounded-full"/>
+        
+        quality={100}
+        className="w-7 h-7 rounded-full"/> */}
+        <div
+            className="w-8 h-8 rounded-full "
+            style={{
+              backgroundImage: `url(http://localhost:4000${project.profileUrl})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          ></div>
       <span className="ml-2 text-white text-sm">{project.name}</span>
       <div className="bg-gray-300 pl-2 pr-2 ml-2 rounded-md text-white font-bold text-sm">{project.isPaid}</div>   
       </div>     

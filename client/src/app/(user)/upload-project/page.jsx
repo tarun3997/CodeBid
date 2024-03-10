@@ -11,7 +11,7 @@ export default function UploadProject() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState("");
-    const [paid, setPaid] = useState("FREE");
+    const [paid, setPaid] = useState("Free");
     const [selectedImage, setSelectedImage] = useState([]);
     // const [imageFile, setImageFile] = useState([]);
 
@@ -60,9 +60,9 @@ export default function UploadProject() {
                     <CustomInput type={"textarea"} onChanges={(e) => setDescription(e.target.value)} />
                     <span>Want to sell?</span>
                     <div>
-                        <input type="radio" name="isPaid" value="FREE" onChange={(e) => setPaid(e.target.value)} />
+                        <input type="radio" name="isPaid" value="Free" onChange={(e) => setPaid(e.target.value)} />
                         <span>Free</span>
-                        <input type="radio" name="isPaid" value="PAID"  onChange={(e) => setPaid(e.target.value)} />
+                        <input type="radio" name="isPaid" value="Paid"  onChange={(e) => setPaid(e.target.value)} />
                         <span>Paid</span>   
                     </div>
                     <span>Project amount</span>

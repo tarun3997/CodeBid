@@ -30,8 +30,9 @@ const getAllProjects= async(req, res)=>{
                 views: project.views,
                 username: project.creator.username,
                 name: project.creator.Profile.name,
-                profileUrl: `E:/Tarun Document/Projects/CodeBid/server/postedprojectImages/${project.creator.Profile.profileUrl}`,
-                location: project.creator.Profile.location
+                profileUrl: `/profileImages/${project.creator.Profile.profileUrl}`,
+                location: project.creator.Profile.location,
+                PostImage: project.PostImage[0],
             }
         })
         res.json({getProject : filterProject})

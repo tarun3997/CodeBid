@@ -4,16 +4,31 @@ import { useRouter } from "next/navigation";
 import bg from "../../../public/bg1.jpg";
 import GetStartButton from "@/components/getStartBtn";
 import ProjectShowingCard from "@/components/projectShowingCard";
+import { useEffect, useState } from "react";
 
 
 export default function WelcomeScreen() {
-  const projectCards = Array.from({ length: 10 }, (_, index) => (
-    <ProjectShowingCard key={index} />
-  ));
+  const [project, setProject]= useState([]);
+
+  
   const router = useRouter();
   const handleGetStartedClick = () => {
     router.push("/login");
   };
+  useEffect(()=>{
+    const fetchProjects = async ()=>{
+      try {
+        const profile = await axios.get("http://localhost:4000/api/get-projects");
+        
+        setProject(profile.data.getProject)
+        
+        
+      } catch (e) {
+        console.error("Error fetching user count:", e);
+      }
+    }
+    fetchProjects()
+  },[]);
   return (
     <div className="">
       <div
@@ -79,11 +94,9 @@ export default function WelcomeScreen() {
         <div className="flex justify-center mt-20 flex-col items-center ">
           <span className="text-white font-bold mb-5 text-4xl">Explore</span>
           <div className=" w-full flex flex-wrap justify-center">
-          {projectCards.map((card, index) => (
-              <div key={index} className="m-4">
-                {card}
-              </div>
-            ))}
+          {project.map((projects, index)=>(
+        <ProjectShowingCard key={index} project={projects}/>
+        ))}
           </div>
         </div>
         
