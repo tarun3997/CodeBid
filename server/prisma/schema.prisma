@@ -65,7 +65,7 @@ model Project {
 model PostImage {
   imageId   Int     @id @default(autoincrement())
   imageUrl  String
-  project   Project @relation(fields: [projectId], references: [project_id])
+  project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
   projectId String
 }
 
@@ -73,8 +73,8 @@ model Like {
   id        Int     @id @default(autoincrement())
   userId    String
   projectId String
-  project   Project @relation(fields: [projectId], references: [project_id])
-  user      User    @relation(fields: [userId], references: [id])
+  project   Project @relation(fields: [projectId], references: [project_id] , onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade )
 
   @@unique([userId, projectId])
 }
@@ -84,8 +84,8 @@ model Comment {
   userId    String
   projectId String
   content   String
-  project   Project @relation(fields: [projectId], references: [project_id])
-  user      User    @relation(fields: [userId], references: [id])
+  project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Ratting {
@@ -93,17 +93,17 @@ model Ratting {
   userId    String
   projectId String
   rating    Float
-  project   Project @relation(fields: [projectId], references: [project_id])
-  user      User    @relation(fields: [userId], references: [id])
+  project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
 }
 
 model Follow {
   id          Int    @id @default(autoincrement())
-  follower    User   @relation("UserFollowers", fields: [followerId], references: [id])
+  follower    User   @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
   followerId  String
-  following   User   @relation("UserFollowing", fields: [followingId], references: [id])
+  following   User   @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
   followingId String
 
   @@unique([followerId, followingId])

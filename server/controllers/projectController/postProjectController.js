@@ -1,13 +1,14 @@
 
 const jwt = require('jsonwebtoken')
+const path = require('path')
 require('dotenv').config()
 
 
 const PostProject = async (req,res)=>{
     const {title,description,project_Price,isPaid} = req.body;
 
-    const imagePaths = req.files.map(file => file.path);
-        try{
+    const imagePaths = req.files.map(file => file.path.replace(/\\/g, '/'));
+    try{
             const cookie = req.get('authToken')
         const claims = jwt.verify(cookie,process.env.ACCESS_TOKEN_SECRET)
         if(!claims){

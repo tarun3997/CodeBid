@@ -23,6 +23,7 @@ const getAllProjects= async(req, res)=>{
 
         const filterProject = getProject.map(project =>{
             return {
+                projectId: project.project_id,
                 title: project.title,
                 description: project.description,
                 project_Price: project.project_Price,

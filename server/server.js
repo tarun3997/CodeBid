@@ -17,6 +17,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json())
 
 app.use('/profileImages', express.static('profileImages'));
+app.use('/postedprojectImages', express.static('postedprojectImages'));
 
 app.use('/auth',authRoutes)
 app.use('/admin',adminRoutes)

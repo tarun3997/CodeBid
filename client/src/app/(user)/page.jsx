@@ -80,13 +80,16 @@ export default function Home() {
           ></div>
         </div>
       </div>
-      <div className="p-6 w-full ">
+      <div className="p-6 w-full flex flex-col">
         <span className="text-white font-Archivo ">FEATURED POSTS</span>
-        <div className="flex flex-wrap mt-4 justify-stretch gap-5">
+        {project.length ===0 ? (
+        <div className="text-white m-auto">No project available</div>) :
+        (<div className="flex flex-wrap mt-4 justify-stretch gap-5">
         {project.map((projects, index)=>(
         <ProjectShowingCard key={index} project={projects}/>
         ))}
-        </div>
+        </div>)
+        }
       </div>
     </div>
   );

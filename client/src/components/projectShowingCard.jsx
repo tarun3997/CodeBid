@@ -1,18 +1,31 @@
 import { FaHeart, FaEye, FaSave, FaRegBookmark, FaRegHeart } from "react-icons/fa";
-import bg from "../../public/bg1.jpg";
 import React, { useState } from 'react';
-import Image from "next/image";
+import axios from "axios";
+
 
 
 export default function ProjectShowingCard({project}) {
     const [isHovered, setIsHovered] = useState(false);
-
-
+    const likePost= async()=>{
+      try{
+        const projectId = project.projectId;
+        
+        await axios.post("http://localhost:4000/api/like",{
+          projectId
+        },{
+          headers: {
+            authToken: localStorage.getItem('authToken')
+        }
+        })
+      }catch(e){
+        console.error("Error creating like:", e);
+      }
+    }
     return <div className="w-[23%]">
 
     <div className="w-full h-60 flex justify-between items-end  bg-slate-300 rounded-xl cursor-pointer"
 style={{
-  backgroundImage: `url(${bg.src})`,
+  backgroundImage: `url(${encodeURI(`http://localhost:4000/${project.PostImage.imageUrl}`)})`,
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   backgroundPosition: "center",
@@ -27,7 +40,7 @@ onMouseLeave={() => setIsHovered(false)}
     <div className="w-8 h-8 mr-2 bg-slate-50 rounded-full flex items-center justify-center" >
       <FaRegBookmark className="h-4 w-4 text-blue-500"/>
     </div>
-    <div className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center" >
+    <div onClick={likePost} className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center">
       <FaRegHeart className="h-4 w-4 text-blue-500 "/>
     </div>
   </div>
