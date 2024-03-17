@@ -76,7 +76,7 @@ async function handelUserRegister(req, res){
 }
 
 async function handelUserLogout(req,res){
-    res.cookie('jwt', '', {maxAge: 0})
+    res.clearCookie('jwt');
     res.send({message: 'Logout'})
 }
 

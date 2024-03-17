@@ -42,6 +42,7 @@ const PostProject = async (req,res)=>{
                 PostImage:true
             } 
         })
+        console.log(projects)
         res.status(201).json(projects);
     }
     }catch(e){

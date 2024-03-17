@@ -1,3 +1,5 @@
+"use client"
+
 import { MdDashboard } from "react-icons/md"; 
 import Image from "next/image";
 import {
@@ -7,10 +9,31 @@ import {
   FaUpload,
 } from "react-icons/fa";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Sidebar() {
+  const [userRole, setUserRole] = useState('USER')
+  useEffect(()=>{
+    const isAdminLogin = async ()=>{
+      try{
+        const isAdmin = await axios.get("http://localhost:4000/api/user-role",{
+          headers: {
+            authToken: localStorage.getItem("authToken"),
+          },
+        })
+        setUserRole(isAdmin.data)
+        console.log(isAdmin.data)
+      }catch(e){
+        console.error("Error fetching user count:", e);
+      }
+    };
+    isAdminLogin()
+  },
+  [])
+
   return (
-    <div className="h-screen flex">
+    <div className="h-screen flex fixed">
       <div className="w-full h-full bg-[#28274d] flex flex-col items-start">
         <Image
           className="mt-5 p-4"
@@ -22,9 +45,12 @@ export default function Sidebar() {
         <div className="h-4"></div>
         <div className="w-full p-4">
           <span className="text-start text-lg text-white font-bold">Menu</span>
-          <SideNavItem icon={<MdDashboard color="white"/> } name={"Dashboard"} link={"/admin/dashboard"}/>
+          {userRole === 'ADMIN' &&
+            <SideNavItem icon={<MdDashboard color="white"/> } name={"Dashboard"} link={"/admin/dashboard"}/> 
+          }
           <SideNavItem icon={<FaHome color="white"/>} name={"Home"} link={"/"}/>
           <SideNavItem icon={<FaUpload color="white"/>} name={"Upload"} link={"/upload-project"}/>
+          
           <SideNavItem icon={<FaCog color="white"/>} name={"Settings"} link={"/"}/>
           <SideNavItem icon={<FaQuestionCircle color="white"/>} name={"Help"} link={"/"}/>
         </div>

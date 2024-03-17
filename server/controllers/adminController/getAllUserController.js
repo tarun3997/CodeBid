@@ -57,7 +57,7 @@ async function getAllUser(req, res){
 }
 
 async function deleteUser(req, res){
-    console.log(req.body)
+    
     try{
         const deleteUser = await global.prisma.user.delete({
             where:{
@@ -90,5 +90,6 @@ async function getUsersAddedToday(req, res){
         console.error('Error fetching users added today:', e);
     }
 }
+
 
 module.exports = {getAllUserCount, getAllUser,getUsersAddedToday, deleteUser};

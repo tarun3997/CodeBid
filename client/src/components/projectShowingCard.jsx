@@ -1,11 +1,16 @@
+import { AiFillHeart } from "react-icons/ai"; 
 import { FaHeart, FaEye, FaSave, FaRegBookmark, FaRegHeart } from "react-icons/fa";
 import React, { useState } from 'react';
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 
-export default function ProjectShowingCard({project}) {
+export default function ProjectShowingCard({project, fetchProject}) {
     const [isHovered, setIsHovered] = useState(false);
+    const [isProjectLike, setProjectLike] = useState(project.isLikes);
+    const router = useRouter();
+
     const likePost= async()=>{
       try{
         const projectId = project.projectId;
@@ -17,31 +22,41 @@ export default function ProjectShowingCard({project}) {
             authToken: localStorage.getItem('authToken')
         }
         })
+        setProjectLike(!isProjectLike)
+        fetchProject();
+        
+
       }catch(e){
         console.error("Error creating like:", e);
       }
     }
+
     return <div className="w-[23%]">
 
-    <div className="w-full h-60 flex justify-between items-end  bg-slate-300 rounded-xl cursor-pointer"
+    <div className="w-full h-60 flex justify-between items-end  bg-slate-300 rounded-xl cursor-pointer "
 style={{
   backgroundImage: `url(${encodeURI(`http://localhost:4000/${project.PostImage.imageUrl}`)})`,
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   backgroundPosition: "center",
-  position: 'relative', // Necessary for absolute positioning of content
+  position: 'relative',
 }}
 onMouseEnter={() => setIsHovered(true)}
 onMouseLeave={() => setIsHovered(false)}
 >
-<div className="flex justify-between w-full p-2" style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s' }}>
+{isHovered && (
+                    <div
+                        className="absolute top-0 left-0 w-full h-full bg-black opacity-30   rounded-xl"
+                    ></div>
+                )}
+<div className="relative flex justify-between w-full p-2" style={{ opacity: isHovered ? 1 : 0, transition: 'opacity 0.3s' }}>
   <span className="text-white truncate w-3/5">{project.title}</span>
   <div className="flex">
     <div className="w-8 h-8 mr-2 bg-slate-50 rounded-full flex items-center justify-center" >
       <FaRegBookmark className="h-4 w-4 text-blue-500"/>
     </div>
     <div onClick={likePost} className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center">
-      <FaRegHeart className="h-4 w-4 text-blue-500 "/>
+      {isProjectLike ? <AiFillHeart className="h-4 w-4 text-red-500 "/> : <FaRegHeart className="h-4 w-4 text-blue-500 "/> }
     </div>
   </div>
 </div>
@@ -67,7 +82,7 @@ onMouseLeave={() => setIsHovered(false)}
       </div>     
       <div className="flex items-center text-white text-xs">
       <FaHeart className="h-4 w-4 text-red-500 mr-1"/>
-        <span>112</span>
+        <span>{project.likes}</span>
         <FaEye className="h-4 w-4 ml-2 text-blue-500 mr-1"/>
         <span>{project.views}</span>
         </div>  

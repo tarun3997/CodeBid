@@ -6,13 +6,18 @@ import { useRouter } from "next/navigation";
 import { FaSearch, FaBell } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ProjectShowingCard from "../../components/projectShowingCard";
+import ProjectCard from "@/components/projectCard";
+import ProfileDropdown from "@/components/profileDropDownComponet";
 
 export default function Home() {
-  const [profileImage, setProfileImage] = useState(null);
+  const [profile, setProfile] = useState([]);
   const [project, setProject]= useState([]);
   const router = useRouter()
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
+      if (!token) {
+        router.push('/welcome');
+      }
     fetchProfile();
     fetchProjects();
   }, []);
@@ -25,22 +30,23 @@ export default function Home() {
           headers: {
             authToken: localStorage.getItem("authToken"),
           },
-          responseType: "arraybuffer",
         }
       );
-      const imageBase64 = Buffer.from(profile.data, "binary").toString(
-        "base64"
-      );
 
-      setProfileImage(`data:image/png;base64,${imageBase64}`);
+      setProfile(profile.data.userProfile);
     } catch (e) {
       console.error("Error fetching user count:", e);
     }
   };
+  // console.log(profile)
   
   const fetchProjects = async ()=>{
     try {
-      const profile = await axios.get("http://localhost:4000/api/get-projects");
+      const profile = await axios.get("http://localhost:4000/api/get-projects",{
+          headers: {
+            authToken: localStorage.getItem('authToken')
+        }
+      });
       
       setProject(profile.data.getProject)
       
@@ -50,11 +56,7 @@ export default function Home() {
     }
   }
 
-  
-    const token = localStorage.getItem('authToken');
-      if (!token) {
-        router.push('/welcome');
-      }
+    
   return (
     <div className="w-full flex flex-col">
       <div className="flex justify-around items-center w-full mt-4">
@@ -67,29 +69,34 @@ export default function Home() {
           />
           <FaSearch className="absolute  right-5 text-gray-400" />
         </div>
-        <div className="flex">
+        <div className="flex gap-4">
           <TopIconDiv icon={<FaBell className="fill-white" />} />
           <TopIconDiv icon={<AiFillMessage className="fill-white" />} />
-          <div
-            className="w-10 h-10 rounded-full ml-4 cursor-pointer"
+          {/* <div
+            className="w-10 h-10 rounded-full  cursor-pointer"
             style={{
               backgroundImage: `url(${profileImage})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
-          ></div>
+          ></div> */}
+          <ProfileDropdown profileImage={profile.profileUrl} email={profile.email}/>
         </div>
       </div>
-      <div className="p-6 w-full flex flex-col">
-        <span className="text-white font-Archivo ">FEATURED POSTS</span>
-        {project.length ===0 ? (
+      <div className="p-6 w-full items-center  flex flex-col">
+        <span className=" text-white text-start font-Archivo ">FEATURED POSTS</span>
+        {project.length === 0 ? (
         <div className="text-white m-auto">No project available</div>) :
-        (<div className="flex flex-wrap mt-4 justify-stretch gap-5">
+        (<div className="flex w-full flex-col items-center mt-4 justify-stretch gap-5">
+        {/* {project.map((projects, index)=>(
+        <ProjectShowingCard key={index} project={projects} fetchProject={fetchProjects}/>
+        ))} */}
         {project.map((projects, index)=>(
-        <ProjectShowingCard key={index} project={projects}/>
+          <ProjectCard key={index} project={projects} fetchProject={fetchProjects}/>
         ))}
         </div>)
         }
+        
       </div>
     </div>
   );
@@ -97,7 +104,7 @@ export default function Home() {
 
 function TopIconDiv({ icon }) {
   return (
-    <div className="bg-[#393b70] w-10 h-10 flex justify-center items-center rounded-lg ml-4 cursor-pointer">
+    <div className="bg-[#393b70] w-10 h-10 flex justify-center items-center rounded-lg cursor-pointer">
       {icon}
     </div>
   );
