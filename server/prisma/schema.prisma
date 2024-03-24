@@ -8,21 +8,25 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  mobile_number String    @unique
-  username      String    @unique
-  password      String
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime? @updatedAt
-  Profile       Profile?
-  Project       Project[]
-  Like          Like[]
-  Comment       Comment[]
-  Ratting       Ratting[]
-  following     Follow[]  @relation("UserFollowing")
-  followers     Follow[]  @relation("UserFollowers")
+  id               String         @id @default(uuid())
+  email            String         @unique
+  mobile_number    String         @unique
+  username         String         @unique
+  password         String
+  role             Role           @default(USER)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime?      @updatedAt
+  Profile          Profile?
+  Project          Project[]
+  Like             Likes[]
+  Comment          Comment[]
+  Ratting          Ratting[]
+  following        Follow[]       @relation("UserFollowing")
+  followers        Follow[]       @relation("UserFollowers")
+  Views            Views[]
+  sentMessages     Message[]      @relation("SentMessages")
+  receivedMessages Message[]      @relation("ReceivedMessages")
+  conversations    Conversation[] @relation("Participant")
 }
 
 enum Role {
@@ -53,10 +57,10 @@ model Project {
   isPaid        isPaid      @default(Free)
   creator       User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId     String
-  likes         Like[]
+  likes         Likes[]
   comments      Comment[]
   ratings       Ratting[]
-  views         Int         @default(0)
+  views         Views[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   PostImage     PostImage[]
@@ -69,12 +73,20 @@ model PostImage {
   projectId String
 }
 
-model Like {
+model Views {
   id        Int     @id @default(autoincrement())
   userId    String
   projectId String
-  project   Project @relation(fields: [projectId], references: [project_id] , onDelete: Cascade)
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade )
+  project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Likes {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, projectId])
 }
@@ -107,4 +119,23 @@ model Follow {
   followingId String
 
   @@unique([followerId, followingId])
+}
+
+model Message {
+  id           String         @id @default(uuid())
+  text         String
+  sender       User           @relation("SentMessages", fields: [senderId], references: [id])
+  senderId     String
+  receiver     User           @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId   String
+  createdAt    DateTime       @default(now())
+  Conversation Conversation[]
+
+  @@index([senderId, receiverId])
+}
+
+model Conversation {
+  id           String    @id @default(uuid())
+  participants User[]    @relation("Participant")
+  messages     Message[]
 }

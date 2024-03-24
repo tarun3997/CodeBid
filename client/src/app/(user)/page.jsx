@@ -1,6 +1,4 @@
 "use client";
-
-
 import { AiFillMessage } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import { FaSearch, FaBell } from "react-icons/fa";
@@ -56,6 +54,11 @@ export default function Home() {
     }
   }
 
+  const handelMessageClick =()=>{
+    router.push('/messages')
+  }
+  
+
     
   return (
     <div className="w-full flex flex-col">
@@ -71,7 +74,9 @@ export default function Home() {
         </div>
         <div className="flex gap-4">
           <TopIconDiv icon={<FaBell className="fill-white" />} />
-          <TopIconDiv icon={<AiFillMessage className="fill-white" />} />
+          <div onClick={handelMessageClick}>
+          <TopIconDiv icon={<AiFillMessage className="fill-white" />}  />
+          </div>
           {/* <div
             className="w-10 h-10 rounded-full  cursor-pointer"
             style={{

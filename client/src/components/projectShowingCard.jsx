@@ -10,6 +10,8 @@ export default function ProjectShowingCard({project, fetchProject}) {
     const [isHovered, setIsHovered] = useState(false);
     const [isProjectLike, setProjectLike] = useState(project.isLikes);
     const router = useRouter();
+    // console.log(project)
+    
 
     const likePost= async()=>{
       try{

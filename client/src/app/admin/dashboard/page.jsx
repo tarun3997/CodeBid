@@ -11,23 +11,10 @@ export default function Dashboard() {
     const [projectCount, setProjectCount] = useState(0);
 
     useEffect(() => {
-        const fetchTotalUser = async () => {
-            try {
-                const totalUsersResponse = await axios.get('http://localhost:4000/admin/all-user');
-                setTotalUsers(totalUsersResponse.data.allUser);
-                const newUserCountResponse = await axios.get('http://localhost:4000/admin/new-user');
-                setNewUserCount(newUserCountResponse.data.usersAddedToday);
-                const totalProjectResponse = await axios.get('http://localhost:4000/admin/total-project');
-                setProjectCount(totalProjectResponse.data.projects)
-
-            } catch (error) {
-                console.error('Error fetching user count:', error);
-            }
-        };
+       
         fetchTotalUser();
     }, []);
-
-    const updateUserCount = async () => {
+    const fetchTotalUser = async () => {
         try {
             const totalUsersResponse = await axios.get('http://localhost:4000/admin/all-user');
             setTotalUsers(totalUsersResponse.data.allUser);
@@ -35,15 +22,29 @@ export default function Dashboard() {
             setNewUserCount(newUserCountResponse.data.usersAddedToday);
             const totalProjectResponse = await axios.get('http://localhost:4000/admin/total-project');
             setProjectCount(totalProjectResponse.data.projects)
+
         } catch (error) {
-            console.error('Error updating user count:', error);
+            console.error('Error fetching user count:', error);
         }
     };
+
+    // const updateUserCount = async () => {
+    //     try {
+    //         const totalUsersResponse = await axios.get('http://localhost:4000/admin/all-user');
+    //         setTotalUsers(totalUsersResponse.data.allUser);
+    //         const newUserCountResponse = await axios.get('http://localhost:4000/admin/new-user');
+    //         setNewUserCount(newUserCountResponse.data.usersAddedToday);
+    //         const totalProjectResponse = await axios.get('http://localhost:4000/admin/total-project');
+    //         setProjectCount(totalProjectResponse.data.projects)
+    //     } catch (error) {
+    //         console.error('Error updating user count:', error);
+    //     }
+    // };
     return <div>
         <div className="flex flex-col p-6 h-screen w-full">
         <span className="text-white font-bold text-2xl">Dashbord</span>
         <UserDetails totalUsers={totalUsers} newUserCount={newUserCount} totalProject={projectCount}/>
-        <UserList updateUserCount={updateUserCount}/>
+        <UserList updateUserCount={fetchTotalUser}/>
         </div>
     </div>
 }

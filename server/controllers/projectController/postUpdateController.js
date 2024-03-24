@@ -7,14 +7,14 @@ async function postLikeController(req, res){
         if(!claims){
             return res.status(401).send({message: 'unauthenticated'})
         }
-        const like = await global.prisma.like.findFirst({
+        const like = await global.prisma.likes.findFirst({
             where: {
                 userId: claims.id,
                 projectId: req.body.projectId
             }
         });
         if (like) {
-            await global.prisma.like.deleteMany({
+            await global.prisma.likes.deleteMany({
                 where: {
                     userId: claims.id,
                     projectId: req.body.projectId
@@ -22,7 +22,7 @@ async function postLikeController(req, res){
             });
             return res.status(200).json({ message: 'Unliked successfully' });
         }else {
-            await global.prisma.like.create({
+            await global.prisma.likes.create({
                 data: {
                     userId: claims.id,
                     projectId: req.body.projectId

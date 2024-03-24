@@ -8,6 +8,9 @@ const getAllProjects= async(req, res)=>{
             return res.status(401).send({message: 'unauthenticated'})
         }
         const getProject = await global.prisma.project.findMany({
+            orderBy:{
+                createdAt: 'desc'
+            },
             include: {
                 
                 creator: {
@@ -36,12 +39,14 @@ const getAllProjects= async(req, res)=>{
         
         const filterProject = await Promise.all(getProject.map(async (project) => {
             const totalLikes = project.likes.length;
-            const isLike = await global.prisma.like.findUnique({
-                where:{
-                    userId: claims.id,
-                    projectId: project.project_id
+            const isLike = await global.prisma.likes.findUnique({
+                where: {
+                    userId_projectId: {
+                        userId: claims.id,
+                        projectId: project.project_id
+                    }
                 }
-            })
+            });
             const createdAt = new Date(project.createdAt);
             const currentTime = new Date();
             const timeDiff = currentTime - createdAt;
@@ -68,7 +73,6 @@ const getAllProjects= async(req, res)=>{
                 description: project.description,
                 project_Price: project.project_Price,
                 isPaid: project.isPaid,
-                views: project.views,
                 username: project.creator.username,
                 name: project.creator.Profile.name,
                 profileUrl: `/profileImages/${project.creator.Profile.profileUrl}`,
@@ -77,7 +81,6 @@ const getAllProjects= async(req, res)=>{
                 likes: totalLikes,
                 isLikes: isLike ? true : false,
                 totalComment: commentsContent.length
-                
             }
         }))
         // console.log(filterProject)

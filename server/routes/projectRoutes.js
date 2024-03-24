@@ -2,6 +2,7 @@ const multer = require('multer');
 const PostProject = require('../controllers/projectController/postProjectController');
 const getAllProjects = require('../controllers/projectController/getAllProjectController');
 const { postLikeController, postCommentsController, deletePostController } = require('../controllers/projectController/postUpdateController');
+const getAllUserProject = require('../controllers/projectController/getUserProjectController');
 
 const router = require('express').Router()
 
@@ -18,5 +19,6 @@ const upload = multer({ storage: Storage });
  router.post('/like', postLikeController)
  router.post('/comment', postCommentsController)
  router.post('/delete', deletePostController)
+ router.get('/user-post',getAllUserProject)
 
  module.exports = router;

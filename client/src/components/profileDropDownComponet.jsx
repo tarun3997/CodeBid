@@ -1,6 +1,7 @@
 import React from "react";
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User} from "@nextui-org/react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function ProfileDropdown({profileImage, email}) {
     const handelLogout= async()=>{
@@ -11,6 +12,10 @@ export default function ProfileDropdown({profileImage, email}) {
         }catch(e){
             console.error('Error occurred:', e);
         }
+    }
+    const router = useRouter()
+    const handelRoute =()=>{
+      router.push('/profile')
     }
     // console.log(profileImage)
   return (
@@ -29,8 +34,8 @@ export default function ProfileDropdown({profileImage, email}) {
             <p className="font-semibold">Signed in as</p>
             <p className="font-semibold">{email}</p>
           </DropdownItem>
-          <DropdownItem key="settings">
-            My Settings
+          <DropdownItem key="profile" onClick={handelRoute}>
+            Profile
           </DropdownItem>
           <DropdownItem key="team_settings">Team Settings</DropdownItem>
           <DropdownItem key="analytics">
