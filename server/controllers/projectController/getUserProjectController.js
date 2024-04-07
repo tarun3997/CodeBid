@@ -39,10 +39,12 @@ const getAllUserProject = async (req, res) => {
     const filterProject = await Promise.all(
       userProject.map(async (project) => {
         const totalLikes = project.likes.length;
-        const isLike = await global.prisma.like.findUnique({
+        const isLike = await global.prisma.likes.findUnique({
           where: {
-            userId: claims.id,
-            projectId: project.project_id,
+            userId_projectId: {
+              userId: claims.id,
+              projectId: project.project_id,
+            }
           },
         });
         const createdAt = new Date(project.createdAt);

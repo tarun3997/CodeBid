@@ -15,6 +15,7 @@ const getAllProjects= async(req, res)=>{
                 
                 creator: {
                     select: {
+                        id: true,
                         username: true,
                         Profile: {
                             select: {
@@ -47,6 +48,14 @@ const getAllProjects= async(req, res)=>{
                     }
                 }
             });
+            const isFollow = await global.prisma.follow.findUnique({
+                where:{
+                    followerId_followingId: {
+                        followerId: project.creator.id,
+                        followingId: claims.id
+                    }
+                }
+            })
             const createdAt = new Date(project.createdAt);
             const currentTime = new Date();
             const timeDiff = currentTime - createdAt;
@@ -67,6 +76,7 @@ const getAllProjects= async(req, res)=>{
             const commentsContent = project.comments.map(comment => comment.content);
 
             return {
+                id: project.creator.id,
                 projectId: project.project_id,
                 createdAt: displayTime,
                 title: project.title,
@@ -80,10 +90,12 @@ const getAllProjects= async(req, res)=>{
                 PostImage: project.PostImage[0],
                 likes: totalLikes,
                 isLikes: isLike ? true : false,
-                totalComment: commentsContent.length
+                totalComment: commentsContent.length,
+                isFollowing: isFollow ? true : false,
+                ownPost: claims.id === project.creator.id ? true : false
             }
         }))
-        // console.log(filterProject)
+        // console.log(filterProject)  
         res.json({getProject : filterProject})
     }catch(e){
         console.log(e)

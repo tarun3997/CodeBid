@@ -1,4 +1,3 @@
-const {prisma, Prisma} = require('../../db')
 
 async function getAllUserCount(req, res){
     try{

@@ -9,9 +9,9 @@ function initializeSocket(server) {
     },
   });
 
+
   io.use((socket, next) => {
     const authToken = socket.handshake.auth.authToken;
-    console.log(authToken)
     try {
       const claims = jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET);
       if (!claims) {
@@ -25,23 +25,27 @@ function initializeSocket(server) {
     }
   });
   io.on("connection", (socket) => {
+    
     socket.on("join-room", (roomId) => {
       socket.join(roomId);
+      console.log(`user with id-${socket.id} joined room - ${roomId}`);
     });
 
-    socket.on("user-message", async ({ receiverId, text }) => {
+    socket.on("user-message", async ({receiverId, text}) => {      
+      // console.log(data)
+      // socket.to(data.receiverId).emit("user-message", { data});
       try {
         const senderId = socket.authenticatedUserId;
-        const message = await global.prisma.message.create({
+        await global.prisma.message.create({
           data: {
             senderId,
             receiverId,
             text,
           },
-        });
-        console.log("Message saved to database:", message.id);
-        io.to(senderId).to(receiverId).emit("message", message);
-        console.log(message);
+        }); 
+        socket.broadcast.emit('user-message', text)
+
+
       } catch (e) {
         console.error("Error saving message to database:", e);
       }

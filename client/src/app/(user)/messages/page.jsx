@@ -1,168 +1,162 @@
 "use client";
 
+import ChatScreen from "@/components/messageComponets/chatScreen";
 import MessageList from "@/components/messageComponets/messageList";
-import ReceivedMessage from "@/components/messageComponets/receiverMessage";
-import SenderMessage from "@/components/messageComponets/senderMessage";
+import { Input } from "@nextui-org/react";
 import axios from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AiOutlineSearch } from "react-icons/ai";
 import io from "socket.io-client";
-
 const URL = "http://localhost:4000";
-const socket = io(URL,{
-  auth:{
-    authToken: localStorage.getItem('authToken')
-  }
+const authToken = typeof window !== 'undefined' ? localStorage.getItem("authToken") : null;
+
+const socket = io(URL, {
+  auth: {
+    authToken: authToken,
+  },
 });
 
 export default function Message() {
-  const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [userList, setUserList]= useState([]);
+  const [userList, setUserList] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  
-  useEffect(() => {
-    socket.on("message", (msg) => {
-      setMessages((prevMessages) => [...prevMessages, msg]);
-    });
+  const [filteredUserList, setFilteredUserList] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const router = useRouter();
+  const params = useSearchParams();
+  const userId = params.get("user");
 
+  useEffect(() => {
     userLists();
-    return () => {
-      socket.off("message");
-    };
   }, []);
 
-  const userLists =async ()=>{
-    try{
+  const userLists = async () => {
+    try {
       const users = await axios.get(
-        'http://localhost:4000/chat/api/user-list',
+        "http://localhost:4000/chat/api/user-list",
         {
-          headers:{
+          headers: {
             authToken: localStorage.getItem("authToken"),
-          }
+          },
         }
-      )
-      // console.log(users.data)
-      setUserList(users.data)
-    }catch(e){
+      );
+      setUserList(users.data);
+      setFilteredUserList(users.data);
+    } catch (e) {
       console.error("Error fetching user count:", e);
     }
-  }
-
-  const sendMessage = (e) => {
-    e.preventDefault();
-    if (input.trim() !== '') {
-      const receiverId = selectedUser.id;
-      
-      socket.emit('user-message', { receiverId, text: input });
-      setInput('');
-    }
   };
-  socket.on('message',(msg)=> sendMessage((prevMessages)=>[...prevMessages, msg]));
+
+  
  
-  const handelUserSelection=(user)=>{
-    setSelectedUser(user)
+
+  const handelUserSelection = (user) => {
+    setSelectedUser(user);
+    router.replace(`/messages/?user=${user.id}`);
+
+  };
+  const handleSearchInputChange = (e) => {
+    setSearchInput(e.target.value);
+    filterUserList(e.target.value);
+  };
+
+  const users = async ()=>{
+    try{
+      const response =  await axios.get('http://localhost:4000/chat/api/search-user',
+      {
+        headers: {
+          authToken: localStorage.getItem("authToken"),
+        },
+        params: {
+          user: searchInput, 
+        },
+      })
+    setFilteredUserList(response.data || []);
+    }catch(e){
+      console.error("Error fetching users:", e);
+    }
   }
-  const renderMessageTimestamp=()=>{
+  useEffect(() => {
+    if (searchInput) {
+      users();
+      
+    } else {
+      setFilteredUserList(userList);
+    }
+  }, [searchInput]);
+  const filterUserList = (searchQuery) => {
+    const filteredList = userList.filter(user =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredUserList(filteredList);
+  };
+  const renderMessageTimestamp = () => {
     if (messages.length === 0) {
-      return 'Start your chat';
+      return "Start your chat";
     } else {
       return new Date().toLocaleDateString();
     }
-  }
-  const renderMessage = () => {
-    console.log("messages:", messages); // Log the entire messages array
-  
-    return messages.map((message, index) => {
-      console.log("message:", message); // Log individual message objects
-  
-      if (message.senderId === 'ef86ffbf-e1f5-44d2-8688-eacef0bf053c') {
-        return <SenderMessage key={index} message={message} />;
-      } else {
-        return <ReceivedMessage key={index} message={message} />;
-      }
-    });
   };
+  
+const clearSearch=()=>{
+  setSearchInput('')
+}
   return (
+
+    <div className="flex w-full">
+      <div className="w-[8%]"></div>
     <div className=" flex h-screen justify-center items-center gap-6 w-full">
       <div className="w-[30%] h-4/5 rounded-xl p-4 gap-2 bg-white/50 flex flex-col overflow-auto">
-        <div>
+        <div className="flex justify-between">
           <span className="font-bold">Inbox</span>
+          <Input
+            isClearable
+            classNames={{
+              base: "w-full sm:max-w-[54%]",
+              inputWrapper: "border-1 text-white relative",
+              placeholder: "text-gray-400 text-sm",
+            }}
+            placeholder="Search by username"
+            onClear={clearSearch}
+            size="sm"
+            startContent={<AiOutlineSearch className="text-default-300" />}
+            variant="bordered"
+            value={searchInput}
+            onChange={handleSearchInputChange}
+            
+          />
         </div>
-        {userList.map((users,index)=>(
-          <MessageList key={index} name={users.name} image={users.profileUrl} onClick={()=>handelUserSelection(users)}/>
-        ))}
+        {filteredUserList.length === 0 ? (
+        <div className="flex justify-center items-center text-white h-full">No users</div>
+      ) : (
+        filteredUserList.map((user, index) => (
+          <MessageList
+            key={index}
+            name={user.name}
+            image={user.profileUrl}
+            onClick={() => handelUserSelection(user)}
+            lastMessageTime={user.lastMessageTime}
+            lastMessage={user.lastMessage}
+          />
+        ))
+      )}
       </div>
-      <div className="w-[60%] h-4/5 bg-blue-500 rounded-xl p-5">
-        <div className="flex gap-4">
-          <div className="w-11 h-11 rounded-full bg-blue-200"></div>
-          <div className="flex flex-col w-full">
-            <div className="flex justify-between items-center">
-              <span className="overflow-ellipsis font-bold">Fabio Gramer</span>
-              <span className="text-xs">14:22</span>
-            </div>
-            <span className=" text-xs whitespace-nowrap overflow-hidden truncate">
-              Active
-            </span>
-          </div>
+      {userId === null ? (
+        <div className="w-[60%] h-4/5 bg-blue-500 rounded-xl p-5 flex justify-center items-center text-white">
+          No User is Select
         </div>
-        <div className="w-full h-[90%] rounded-lg bg-white mt-4 flex flex-col overflow-auto justify-end items-center">
-            <span className="text-xs mb-4 font-semibold text-[#616060]">{renderMessageTimestamp()}</span>
-            <div className="w-full flex flex-col ">
-            <div className="flex gap-2 mx-4 mb-2 justify-end">
-    <div className="w-9 h-9 rounded-full bg-blue-200"></div>
-    <div className="bg-[#23262f] p-2 rounded-tr-md rounded-br-md rounded-bl-md max-w-80 text-white">hi</div>
+      ) : (
+        <ChatScreen
+
+          renderMessageTimestamp={renderMessageTimestamp()}
+          name={selectedUser.name}
+          profileImg={selectedUser.profileUrl}
+          receiverId={userId}
+          selectedUser={selectedUser}
+        />
+      )}
     </div>
-            </div>
-          <div className="w-full">
-            <div className="flex items-center px-3 py-2 rounded-lg  ">
-              <textarea
-                rows="1"
-                value={input}
-                onChange={(e)=> setInput(e.target.value)}
-                className=" resize-none block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Your message..."
-              ></textarea>
-              <button
-                type="button"
-                className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
-              >
-                <svg
-                  className="w-5 h-5"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z"
-                  />
-                </svg>
-                <span class="sr-only">Add emoji</span>
-              </button>
-              <button
-                type="submit" 
-                onClick={sendMessage}
-                className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
-              >
-                <svg
-                  className="w-5 h-5 rotate-90 rtl:-rotate-90"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 18 20"
-                >
-                  <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-                </svg>
-                <span className="sr-only">Send message</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

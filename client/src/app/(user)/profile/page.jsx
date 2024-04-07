@@ -11,9 +11,11 @@ import ProjectShowingCard from "@/components/projectShowingCard";
   export default function Profile() {
     const [profile, setProfile] = useState([]);
     const [projects , setProjects] = useState([]);
+    const [Follower, setFollower] = useState([])
     useEffect(()=>{
         fetchProfile(),
-        userProject()
+        userProject(),
+        fetchFollower()
     },[])
     const fetchProfile = async () => {
         try {
@@ -43,8 +45,24 @@ import ProjectShowingCard from "@/components/projectShowingCard";
           console.error("Error fetching user count:", e);
         }
       }
+      const fetchFollower = async ()=>{
+        try{
+          const response = await axios.get("http://localhost:4000/api/get-follower",{
+            headers:{
+              authToken: localStorage.getItem('authToken')
+            }
+          })
+          console.log(response.data)
+          setFollower(response.data)
+        }catch(e){
+          console.error("Error fetching user count:", e);
+        }
+      }
+      
     return (
-      <div className="bg-[#17151f] h-screen flex">
+      <div className="flex w-full">
+      <div className="w-[10%]"></div>
+      <div className="bg-[#17151f] w-full h-screen flex">
         
         <div className="flex  justify-center items-center w-full flex-col px-4 ">
           <div className="flex">
@@ -58,10 +76,10 @@ import ProjectShowingCard from "@/components/projectShowingCard";
                 </div>
                 <div className="flex gap-4 text-sm">
                   <div className="font-light text-white">
-                    <span className="text-sm text-white font-normal">14</span> Project
+                    <span className="text-sm text-white font-normal">{Follower.totalFollower}</span> Follower
                   </div>
                   <div className="font-light text-sm text-white">
-                    <span className="text-sm text-white font-normal">10</span> Following
+                    <span className="text-sm text-white font-normal">{Follower.totalFollowing}</span> Following
                   </div>
                 </div>
                 <div className="text-white">{profile.name}</div>
@@ -86,6 +104,7 @@ import ProjectShowingCard from "@/components/projectShowingCard";
             ))}
           </div>
         </div>
+      </div>
       </div>
     );
   };

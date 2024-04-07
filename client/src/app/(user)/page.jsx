@@ -6,10 +6,15 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ProjectCard from "@/components/projectCard";
 import ProfileDropdown from "@/components/profileDropDownComponet";
+import { CircularProgress } from "@nextui-org/react";
+import Notification from "@/components/notificationList";
 
 export default function Home() {
   const [profile, setProfile] = useState([]);
   const [project, setProject]= useState([]);
+  const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState([])
+
   const router = useRouter()
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -51,8 +56,24 @@ export default function Home() {
       
     } catch (e) {
       console.error("Error fetching user count:", e);
+    } finally{
+      setLoading(false)
     }
   }
+
+  const notificationData = async()=>{
+    try{
+      const response = await axios.get('http://localhost:4000/notification/get-like',{
+        headers:{
+          authToken: localStorage.getItem('authToken')
+        }
+      });
+      setNotification(response.data.filterNotification)
+    }catch(e){
+      console.error("Error fetching user count:", e);
+    }
+  }
+
 
   const handelMessageClick =()=>{
     router.push('/messages')
@@ -71,31 +92,26 @@ export default function Home() {
             placeholder="Search Here..."
           />
           <FaSearch className="absolute  right-5 text-gray-400" />
+
         </div>
         <div className="flex gap-4">
-          <TopIconDiv icon={<FaBell className="fill-white" />} />
+          <Notification onClick={notificationData} notification={notification}/>
           <div onClick={handelMessageClick}>
           <TopIconDiv icon={<AiFillMessage className="fill-white" />}  />
           </div>
-          {/* <div
-            className="w-10 h-10 rounded-full  cursor-pointer"
-            style={{
-              backgroundImage: `url(${profileImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></div> */}
           <ProfileDropdown profileImage={profile.profileUrl} email={profile.email}/>
         </div>
       </div>
-      <div className="p-6 w-full items-center  flex flex-col">
+      
+      <div className="pt-6 w-full min-h-screen items-center  flex flex-col">
         <span className=" text-white text-start font-Archivo ">FEATURED POSTS</span>
-        {project.length === 0 ? (
+        {loading ? (
+          <div className="text-white m-auto">
+            <CircularProgress label="Loading..." />
+          </div>
+        ) : project.length === 0 ? (
         <div className="text-white m-auto">No project available</div>) :
         (<div className="flex w-full flex-col items-center mt-4 justify-stretch gap-5">
-        {/* {project.map((projects, index)=>(
-        <ProjectShowingCard key={index} project={projects} fetchProject={fetchProjects}/>
-        ))} */}
         {project.map((projects, index)=>(
           <ProjectCard key={index} project={projects} fetchProject={fetchProjects}/>
         ))}

@@ -8,25 +8,27 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  email            String         @unique
-  mobile_number    String         @unique
-  username         String         @unique
-  password         String
-  role             Role           @default(USER)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime?      @updatedAt
-  Profile          Profile?
-  Project          Project[]
-  Like             Likes[]
-  Comment          Comment[]
-  Ratting          Ratting[]
-  following        Follow[]       @relation("UserFollowing")
-  followers        Follow[]       @relation("UserFollowers")
-  Views            Views[]
-  sentMessages     Message[]      @relation("SentMessages")
-  receivedMessages Message[]      @relation("ReceivedMessages")
-  conversations    Conversation[] @relation("Participant")
+  id                    String         @id @default(uuid())
+  email                 String         @unique
+  mobile_number         String         @unique
+  username              String         @unique
+  password              String
+  role                  Role           @default(USER)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime?      @updatedAt
+  Profile               Profile?
+  Project               Project[]
+  Like                  Likes[]
+  Comment               Comment[]
+  Ratting               Ratting[]
+  following             Follow[]       @relation("UserFollowing")
+  followers             Follow[]       @relation("UserFollowers")
+  Views                 Views[]
+  sentMessages          Message[]      @relation("SentMessages")
+  receivedMessages      Message[]      @relation("ReceivedMessages")
+  conversations         Conversation[] @relation("Participant")
+  sentNotifications     Notification[] @relation("SentNotifications")
+  receivedNotifications Notification[] @relation("ReceivedNotifications")
 }
 
 enum Role {
@@ -50,20 +52,21 @@ enum isPaid {
 }
 
 model Project {
-  project_id    String      @id @default(uuid())
+  project_id    String         @id @default(uuid())
   title         String
   description   String
   project_Price Float?
-  isPaid        isPaid      @default(Free)
-  creator       User        @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  isPaid        isPaid         @default(Free)
+  creator       User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   creatorId     String
   likes         Likes[]
   comments      Comment[]
   ratings       Ratting[]
   views         Views[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   PostImage     PostImage[]
+  Notification  Notification[]
 }
 
 model PostImage {
@@ -71,6 +74,27 @@ model PostImage {
   imageUrl  String
   project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
   projectId String
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  sender     User             @relation("SentNotifications", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User             @relation("ReceivedNotifications", fields: [receiverId], references: [id])
+  receiverId String
+  type       NotificationType
+  content    String
+  post       Project?          @relation(fields: [postId], references: [project_id])
+  postId     String?
+  timestamp  DateTime         @default(now())
+}
+
+enum NotificationType {
+  Like
+  Follow
+  Comment
+  Admin
+  Other
 }
 
 model Views {

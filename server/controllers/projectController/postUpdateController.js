@@ -14,7 +14,7 @@ async function postLikeController(req, res){
             }
         });
         if (like) {
-            await global.prisma.likes.deleteMany({
+            await global.prisma.likes.delete({
                 where: {
                     userId: claims.id,
                     projectId: req.body.projectId

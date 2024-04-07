@@ -11,6 +11,7 @@
     const chatRouter
     = require('./routes/chatRoutes')
 const initializeSocket = require('./controllers/chatController/chatSocket')
+const notificationRouter = require('./routes/notificationRoutes')
 
 
     const app = express()
@@ -39,6 +40,7 @@ const initializeSocket = require('./controllers/chatController/chatSocket')
     app.use('/api',userRoutes)
     app.use('/api',projectRouter)
     app.use('/chat/api',chatRouter)
+    app.use('/notification',notificationRouter)
 
     // app.use(authenticateToken)
 
