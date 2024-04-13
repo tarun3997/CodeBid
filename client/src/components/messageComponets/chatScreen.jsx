@@ -79,10 +79,10 @@ export default function ChatScreen({
     scrollToBottom()
   },[])
   return (
-    <div className="w-[60%] h-4/5 bg-blue-500 rounded-xl p-5">
+    <div className="w-[60%] h-4/5  rounded-xl p-5">
       <div className="flex gap-4">
         <div
-          className="w-11 h-11 rounded-full bg-blue-200"
+          className="w-11 h-11 rounded-full "
           style={{
             backgroundImage: `url(http://localhost:4000${profileImg})`,
             backgroundSize: "cover",
@@ -101,7 +101,7 @@ export default function ChatScreen({
           </span>
         </div>
       </div>
-      <div className="w-full h-[90%] rounded-lg bg-white mt-4 flex flex-col justify-end items-center">
+      <div className="w-full h-[90%] rounded-lg  mt-4 flex flex-col justify-end items-center">
         <div className="w-full h-full overflow-y-auto flex flex-col ">
         <span className="text-xs text-center w-full mb-4 font-semibold  text-[#616060]">{renderMessageTimestamp}</span>
         {userMessage.map((data, index) => (
@@ -114,7 +114,7 @@ export default function ChatScreen({
               rows="1"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className=" resize-none block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className=" resize-none block mx-4 p-2.5 w-full text-sm  rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Your message..."
             ></textarea>
             <button
@@ -142,7 +142,7 @@ export default function ChatScreen({
             <button
               type="submit"
               onClick={sendMessage}
-              className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+              className="inline-flex justify-center p-2 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
             >
               <svg
                 className="w-5 h-5 rotate-90 rtl:-rotate-90"

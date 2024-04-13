@@ -39,6 +39,7 @@ const searchUser= async(req, res)=>{
             name: user.Profile.name,
             profileUrl: `/profileImages/${user.Profile.profileUrl}`
           })) 
+        //   console.log(formatedUser)
           res.status(200).send(formatedUser);
     }catch (error) {
         console.error('Error searching for user:', error);

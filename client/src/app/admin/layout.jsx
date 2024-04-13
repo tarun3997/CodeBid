@@ -1,9 +1,9 @@
-import Sidebar from "@/components/Sidebar";
+import CustomNavbar from "@/components/SideNavbar";
 
 export default function DashboardLayout({children}){
     return (
-        <div className="flex bg-[#17151f] w-full">
-            <Sidebar />
+        <div className="flex w-full">
+            <CustomNavbar />
             <div className="w-72"></div>
         <div className="w-full">{children}</div>
         </div>

@@ -36,7 +36,7 @@ export default function UserList({ updateUserCount }) {
         }
     }
     return (
-        <div className="w-[60%] h-[60%] rounded-lg p-4 bg-[#181b26]">
+        <div className="w-[60%] h-[60%] rounded-lg p-4 border-2 shadow-lg">
         <UserListTable />
         </div>
     );

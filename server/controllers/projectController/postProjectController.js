@@ -1,11 +1,10 @@
-
 const jwt = require('jsonwebtoken')
 const path = require('path')
 require('dotenv').config()
 
 
 const PostProject = async (req,res)=>{
-    const {title,description,project_Price,isPaid} = req.body;
+    const {title,description,postLocation} = req.body;
 
     const imagePaths = req.files.map(file => file.path.replace(/\\/g, '/'));
     try{
@@ -29,8 +28,7 @@ const PostProject = async (req,res)=>{
             data:{
                 title: title,
                 description: description,
-                project_Price: parseFloat(project_Price),
-                isPaid: isPaid,
+                postLocation: postLocation,
                 creatorId: claims.id,
                 PostImage:{
                     createMany:{

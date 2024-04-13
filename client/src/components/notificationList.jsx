@@ -18,7 +18,7 @@ export default function Notification({onClick, notification}) {
             <FaBell className="fill-white" />
           </div>
         </DropdownTrigger>
-        <DropdownMenu variant="flat" aria-label="Static Actions" className="w-[400px]">
+        <DropdownMenu variant="flat" aria-label="Static Actions" className="w-[400px] max-h-unit-7xl custom-scrollbar overflow-auto">
           {notification.map((data, index)=>(
           <DropdownItem key={index}>
             <LikeNotificationUI content={data.content} profile={data.profileUrl} timestamp={data.timestamp} postUrl={data.postImage}/>

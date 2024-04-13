@@ -1,4 +1,5 @@
-
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 async function getAllUserCount(req, res){
     try{
         const allUser = await global.prisma.user.count({
@@ -15,11 +16,15 @@ async function getAllUser(req, res){
     try{
         const userList = await global.prisma.user.findMany({
             where:{
-                role: 'USER'
+                OR: [
+                    { role: 'USER' },
+                    { role: 'ADMIN' }
+                ]
             },
             select: {
                 id: true,
                 email: true,
+                role: true,
                 username: true,
                 mobile_number: true,
                 createdAt: true,
@@ -38,7 +43,7 @@ async function getAllUser(req, res){
             const createdAtDate = new Date(user.createdAt);
             const formattedDate = `${createdAtDate.getDate()}-${createdAtDate.getMonth() + 1}-${createdAtDate.getFullYear()}`;
             return {
-                
+                id: user.id,
                 name: user.Profile.name,
                 email: user.email,
                 username: user.username,
@@ -46,6 +51,7 @@ async function getAllUser(req, res){
                 location: user.Profile.location,
                 profileUrl: user.Profile.profileUrl,
                 createdAt: formattedDate,
+                role:user.role
             };
         });
         res.json({ userList : filterUserList});
@@ -65,6 +71,40 @@ async function deleteUser(req, res){
         })
         res.json(deleteUser)
     }catch(e){
+        res.send({message:'Getting error in deleting user',e})
+
+    }
+}
+async function makeAdmin(req, res){
+    
+    try{
+        const cookie = req.get('authToken')
+        const claims = jwt.verify(cookie,process.env.ACCESS_TOKEN_SECRET)
+        if(!claims){
+            return res.status(401).send({message: 'unauthenticated'})
+        }
+        const user = await prisma.user.findUnique({
+            where: {
+                id: claims.id,
+            },
+            select: {
+                role: true,
+            },
+        });
+        if (user.role !== 'SuperAdmin') {
+            return res.status(403).send({ message: 'Unauthorized' });
+          }
+        const admin = await global.prisma.user.update({
+            where: {
+              id: req.body.id
+            },
+            data: {
+              role: req.body.role // Assuming you're updating the role to 'ADMIN'
+            }
+          });
+          res.json(admin);
+    }catch(e){
+        console.error('Error in makeAdmin:', e);
         res.send({message:'Getting error in deleting user',e})
 
     }
@@ -91,4 +131,4 @@ async function getUsersAddedToday(req, res){
 }
 
 
-module.exports = {getAllUserCount, getAllUser,getUsersAddedToday, deleteUser};
+module.exports = {getAllUserCount, getAllUser,getUsersAddedToday, deleteUser, makeAdmin};

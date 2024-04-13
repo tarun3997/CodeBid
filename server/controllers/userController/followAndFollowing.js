@@ -3,6 +3,7 @@ require('dotenv').config()
 async function FollowAndFollowing(req, res){
     try{
         const cookie = req.get('authToken')
+        
         const claims = jwt.verify(cookie,process.env.ACCESS_TOKEN_SECRET);
         if (!claims) {
             return res.status(401).send({ message: "unauthenticated" });
@@ -72,8 +73,6 @@ async function GetFollowAndFollowing(req, res){
             const totalFollowing = user.following.length
             
         // console.log(user)
-        console.log('follower',totalFollower)
-        console.log('following',totalFollowing)
         res.status(200).json({ totalFollower, totalFollowing});
     }catch(e){
         console.log(e)

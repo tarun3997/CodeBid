@@ -2,6 +2,7 @@ import React from "react";
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User} from "@nextui-org/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ProfileDropdown({profileImage, email}) {
     const handelLogout= async()=>{
@@ -37,7 +38,7 @@ export default function ProfileDropdown({profileImage, email}) {
           <DropdownItem key="profile" onClick={handelRoute}>
             Profile
           </DropdownItem>
-          <DropdownItem key="team_settings">Team Settings</DropdownItem>
+          <DropdownItem key="team_settings"><Link href={'/profile/setting'}> Team Settings</Link></DropdownItem>
           <DropdownItem key="analytics">
             Analytics
           </DropdownItem>

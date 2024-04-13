@@ -12,24 +12,24 @@
     = require('./routes/chatRoutes')
 const initializeSocket = require('./controllers/chatController/chatSocket')
 const notificationRouter = require('./routes/notificationRoutes')
+                                                                
 
-
-    const app = express()
+    const app = express()                                                               
     const server = http.createServer(app);
     const io = new Server(server,{
-        cors:{
+        cors:{                                                              
             origin: 'http://localhost:3000'
-        }
-    });
+        }                                                               
+    });                                                             
     app.use(cookieParser())
     app.use(cors({
-        credentials: true,
+        credentials: true,                                                              
         origin: 'http://localhost:3000'
     }))
-    app.use(express.urlencoded({extended: false}));
+    app.use(express.urlencoded({extended: false}));                                                             
     app.use(express.json())
 
-    initializeSocket(server);
+    initializeSocket(server);                                                               
 
 
     app.use('/profileImages', express.static('profileImages'));

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ProjectCard from "@/components/projectCard";
 import ProfileDropdown from "@/components/profileDropDownComponet";
-import { CircularProgress } from "@nextui-org/react";
+import { CircularProgress, Spinner } from "@nextui-org/react";
 import Notification from "@/components/notificationList";
 
 export default function Home() {
@@ -83,17 +83,7 @@ export default function Home() {
     
   return (
     <div className="w-full flex flex-col">
-      <div className="flex justify-around items-center w-full mt-4">
-        <div></div>
-        <div className="relative flex items-center w-[30%] h-12">
-          <input
-            className="h-10 w-full rounded-lg outline-none text-white text-sm p-4 pr-10 bg-[#393b70]"
-            type="text"
-            placeholder="Search Here..."
-          />
-          <FaSearch className="absolute  right-5 text-gray-400" />
-
-        </div>
+      <div className="flex justify-end items-center mt-4 pr-10">
         <div className="flex gap-4">
           <Notification onClick={notificationData} notification={notification}/>
           <div onClick={handelMessageClick}>
@@ -104,13 +94,13 @@ export default function Home() {
       </div>
       
       <div className="pt-6 w-full min-h-screen items-center  flex flex-col">
-        <span className=" text-white text-start font-Archivo ">FEATURED POSTS</span>
+        <span className="  text-start font-Archivo ">FEATURED POSTS</span>
         {loading ? (
-          <div className="text-white m-auto">
-            <CircularProgress label="Loading..." />
+          <div className=" m-auto">
+            <Spinner label="Loading..." />
           </div>
         ) : project.length === 0 ? (
-        <div className="text-white m-auto">No project available</div>) :
+        <div className="m-auto">No project available</div>) :
         (<div className="flex w-full flex-col items-center mt-4 justify-stretch gap-5">
         {project.map((projects, index)=>(
           <ProjectCard key={index} project={projects} fetchProject={fetchProjects}/>

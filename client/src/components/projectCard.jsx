@@ -15,35 +15,37 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
+  Tooltip
 } from "@nextui-org/react";
-import PostDetailModel from "./postDetailScreen";
+// import PostDetailModel from "./postDetailScreen";
 import CommentForm from "./postCommentComponent";
-
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import PostDetailModel from "./postDetailScreen";
+import {
+  likePostApi,
+  handelNotificationApi,
+  handelCommentApi,
+  handelCommentNotificationApi,
+} from "@/api/postApi";
+import EditPost from "./ModelComponents/EditProfile";
+import DeletePost from "./ModelComponents/DeletePost";
 
 export default function ProjectCard({ project, fetchProject }) {
   const [isProjectLike, setProjectLike] = useState(project.isLikes);
   const [showIcon, setShowIcon] = useState(false);
   const [isPostSave, setPostSave] = useState(false);
   const [comment, setComment] = useState("");
-  const [Follow, setFollow] = useState(project.isFollowing)
-  const [OwnPost, setOwnPost] = useState(project.ownPost)
-  const {isOpen, onOpen, onClose} = useDisclosure();
-
+  const [Follow, setFollow] = useState(project.isFollowing);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [modelName, setModelName] = useState("");
+  const params = useSearchParams();
+  const postId = params.get("p");
+  const router = useRouter();
   const likePost = async () => {
     try {
       const projectId = project.projectId;
-
-      await axios.post(
-        "http://localhost:4000/api/like",
-        {
-          projectId,
-        },
-        {
-          headers: {
-            authToken: localStorage.getItem("authToken"),
-          },
-        }
-      );
+      await likePostApi(projectId);
       setProjectLike(!isProjectLike);
       fetchProject();
       setShowIcon(true);
@@ -55,62 +57,39 @@ export default function ProjectCard({ project, fetchProject }) {
       console.error("Error creating like:", e);
     }
   };
-  const handelNotification = async ()=>{
-    try{
-      await axios.post('http://localhost:4000/notification/like',{
-        receiver: project.id,
-        postId: project.projectId,
-      },
-      {
-        headers:{
-          authToken: localStorage.getItem("authToken"),
-        }
-      }
-      );
-    }catch(e){
-      console.error("Error creating like:", e);
-    }
-  }
-  const handelComment = async (e) => {
-    e.preventDefault();
+  const handelNotification = async () => {
     try {
-      await axios.post(
-        "http://localhost:4000/api/comment",
-        {
-          projectId: project.projectId,
-          content: comment,
-        },
-        {
-          headers: {
-            authToken: localStorage.getItem("authToken"),
-          },
-        }
-        );
-        setComment("");
-        fetchProject();
-        setTimeout(()=>{
-          handelCommentNotification()
-        },1000)
+      const id = project.id;
+      const postid = project.projectId;
+      await handelNotificationApi(id, postid);
     } catch (e) {
       console.error("Error creating like:", e);
     }
   };
-  const handelCommentNotification = async()=>{
-    try{
-      await axios.post('http://localhost:4000/notification/comment',{
-        receiver: project.id,
-        postId: project.projectId,
-        comment: comment
-      },{
-        headers: {
-          authToken: localStorage.getItem("authToken"),
-        },
-      })
-    }catch(e){
+  const handelComment = async (e) => {
+    e.preventDefault();
+    try {
+      const postId = project.projectId;
+      await handelCommentApi(postId, comment);
+      setComment("");
+      fetchProject();
+      setTimeout(() => {
+        handelCommentNotification();
+      }, 1000);
+    } catch (e) {
       console.error("Error creating like:", e);
     }
-  }
-  const handelDeletePost = async (e) => {
+  };
+  const handelCommentNotification = async () => {
+    try {
+      const id = project.id;
+      const postId = project.projectId;
+      await handelCommentNotificationApi(id, postId, comment);
+    } catch (e) {
+      console.error("Error creating like:", e);
+    }
+  };
+  const deletePost = async () => {
     try {
       const projectId = project.projectId;
       await axios.post(
@@ -130,21 +109,25 @@ export default function ProjectCard({ project, fetchProject }) {
     }
   };
 
-  const handelFollowAndFollowing = async ()=>{
-    try{
+  const handelFollowAndFollowing = async () => {
+    try {
       const id = project.id;
 
-      await axios.post('http://localhost:4000/api/follow-and-unfollow',{
-        follower: id
-      },{
-        headers:{
-          authToken: localStorage.getItem("authToken"),
+      await axios.post(
+        "http://localhost:4000/api/follow-and-unfollow",
+        {
+          follower: id,
+        },
+        {
+          headers: {
+            authToken: localStorage.getItem("authToken"),
+          },
         }
-      })
-    }catch(e){
+      );
+    } catch (e) {
       console.error("Error creating like:", e);
     }
-  }
+  };
   const items = [
     {
       key: "report",
@@ -167,19 +150,34 @@ export default function ProjectCard({ project, fetchProject }) {
     setPostSave(!isPostSave);
   };
 
-  const followClick = ()=>{
-    setFollow(!Follow)
-    handelFollowAndFollowing()
-  }
-  const handleOpen = () => {
+  const followClick = () => {
+    setFollow(!Follow);
+    handelFollowAndFollowing();
+  };
+  const handleOpen = (post) => {
+    router.push(`/?p=${post.projectId}`);
     onOpen();
-  }
+    setModelName("post");
+    // fetchPostData()
+  };
+  const handleClose = () => {
+    router.replace("/");
+    onClose();
+  };
   const handleChangeComment = (value) => {
     setComment(value);
   };
+  const handleDeleteModel = () => {
+    onOpen();
+    setModelName("delete");
+  };
+  const handleEditModel = () => {
+    onOpen();
+    setModelName("Edit");
+  };
 
   return (
-    <div className="w-[35%]  bg-white flex flex-col rounded-lg mb-7 pb-3">
+    <div className="w-[35%]  flex flex-col shadow-md rounded-lg mb-7 pb-3">
       <div className="flex justify-between items-center m-3">
         <div className="flex items-center gap-2">
           <div
@@ -192,18 +190,28 @@ export default function ProjectCard({ project, fetchProject }) {
           ></div>
           <div className="flex flex-col">
             <div className="flex gap-2 items-center">
-            <span className="font-bold">{project.name}</span>
-            {project.ownPost ? <div></div> :
-            <div onClick={followClick}>
-            { Follow ? 
-            <span className="text-[#544040] text-sm font-bold cursor-pointer">Following</span> : <span className="text-blue-600 text-sm font-bold cursor-pointer">Follow</span>
-            }
-            </div>
-}
+              <span className="font-bold">{project.name}</span>
+              {project.ownPost ? (
+                <div></div>
+              ) : (
+                <div onClick={followClick}>
+                  {Follow ? (
+                    <span className="text-[#544040] text-sm font-bold cursor-pointer">
+                      Following
+                    </span>
+                  ) : (
+                    <span className="text-blue-600 text-sm font-bold cursor-pointer">
+                      Follow
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex gap-1">
-              <span className="text-xs text-[#677681]">
-                @{project.username}
+              <span className="text-xs ">
+                <Link href={`/profile/${project.username}`}>
+                  @{project.username}
+                </Link>
               </span>
               <span className="text-xs text-[#677681]">
                 {project.createdAt}
@@ -218,19 +226,32 @@ export default function ProjectCard({ project, fetchProject }) {
               <BsThreeDotsVertical size={20} />
             </Button>
           </DropdownTrigger>
-          <DropdownMenu aria-label="Dynamic Actions" items={items}>
-            {(item) => (
-              <DropdownItem
-                key={item.key}
-                color={item.key === "delete" ? "danger" : "default"}
-                className={item.key === "delete" ? "text-danger" : ""}
-                onClick={item.key === "delete" ? handelDeletePost : undefined}
-              >
-                {item.label}
+          <DropdownMenu aria-label="Dynamic Actions">
+            <DropdownItem color="default">Report</DropdownItem>
+            <DropdownItem color="default">Copy Link</DropdownItem>
+            {project.ownPost && (
+              <DropdownItem onClick={handleEditModel} color="default">
+                Edit Post
+              </DropdownItem>
+            )}
+            {project.ownPost && (
+              <DropdownItem onClick={handleDeleteModel} color="danger">
+                Delete Post
               </DropdownItem>
             )}
           </DropdownMenu>
         </Dropdown>
+        {modelName === "Edit" && (
+          <EditPost
+            isOpen={isOpen}
+            onClose={onClose}
+            projectId={project.projectId}
+            fetchProject={fetchProject}
+          />
+        )}
+        {modelName === "delete" && (
+          <DeletePost isOpen={isOpen} onClose={onClose} action={deletePost} />
+        )}
       </div>
 
       <hr />
@@ -241,10 +262,9 @@ export default function ProjectCard({ project, fetchProject }) {
           backgroundImage: `url(${encodeURI(
             `http://localhost:4000/${project.PostImage.imageUrl}`
           )})`,
-          backgroundSize: "cover",
+          backgroundSize: "contain",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center",
-          position: "relative",
         }}
       >
         {showIcon && <AiFillHeart color="red" size={55} />}
@@ -259,8 +279,39 @@ export default function ProjectCard({ project, fetchProject }) {
               <AiOutlineHeart size={23} />
             )}
           </div>
-          <AiOutlineMessage size={23} className="cursor-pointer" />
-          <AiOutlineStar size={23} className="cursor-pointer" />
+          <AiOutlineMessage
+            size={23}
+            className="cursor-pointer"
+            onClick={() => handleOpen(project)}
+          />
+
+          <Tooltip
+            content="I am a tooltip"
+            delay={0}
+            closeDelay={0}
+            motionProps={{
+              variants: {
+                exit: {
+                  opacity: 0,
+                  transition: {
+                    duration: 0.1,
+                    ease: "easeIn",
+                  },
+                },
+                enter: {
+                  opacity: 1,
+                  transition: {
+                    duration: 0.15,
+                    ease: "easeOut",
+                  },
+                },
+              },
+            }}
+          >
+            <div>
+              <AiOutlineStar size={23} className="cursor-pointer" />
+            </div>
+          </Tooltip>
         </div>
         <div onClick={handelSaveClick}>
           {isPostSave ? (
@@ -273,13 +324,28 @@ export default function ProjectCard({ project, fetchProject }) {
       <div className="flex flex-col ml-3 mr-3 gap-1">
         <span className="text-sm font-bold">{project.likes} likes</span>
         <span className="">{project.title}</span>
-        <span className=" text-sm text-[#cccccc] cursor-pointer" onClick={handleOpen}>
+        <span
+          className=" text-sm text-[#cccccc] cursor-pointer"
+          onClick={() => handleOpen(project)}
+        >
           View {project.totalComment === 0 ? "" : project.totalComment} all
           comments
         </span>
-        <PostDetailModel isOpen={isOpen} onClose={onClose}/>
-        
-        <CommentForm comment={comment} handelComment={handelComment} onChangeComment={handleChangeComment}/>
+
+        {modelName === "post" && (
+          <PostDetailModel
+            isOpen={isOpen}
+            postId={postId}
+            onClose={handleClose}
+            handelCommentNotification={handelCommentNotification}
+            likePost={likePost}
+          />
+        )}
+        <CommentForm
+          comment={comment}
+          handelComment={handelComment}
+          onChangeComment={handleChangeComment}
+        />
       </div>
     </div>
   );

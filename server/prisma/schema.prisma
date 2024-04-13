@@ -32,6 +32,7 @@ model User {
 }
 
 enum Role {
+  SuperAdmin
   ADMIN
   USER
 }
@@ -46,27 +47,21 @@ model Profile {
   user       User    @relation(fields: [profile_id], references: [id], onDelete: Cascade)
 }
 
-enum isPaid {
-  Paid
-  Free
-}
-
 model Project {
-  project_id    String         @id @default(uuid())
-  title         String
-  description   String
-  project_Price Float?
-  isPaid        isPaid         @default(Free)
-  creator       User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
-  creatorId     String
-  likes         Likes[]
-  comments      Comment[]
-  ratings       Ratting[]
-  views         Views[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  PostImage     PostImage[]
-  Notification  Notification[]
+  project_id   String         @id @default(uuid())
+  title        String
+  description  String
+  postLocation String
+  creator      User           @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId    String
+  likes        Likes[]
+  comments     Comment[]
+  ratings      Ratting[]
+  views        Views[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  PostImage    PostImage[]
+  Notification Notification[]
 }
 
 model PostImage {
@@ -84,7 +79,7 @@ model Notification {
   receiverId String
   type       NotificationType
   content    String
-  post       Project?          @relation(fields: [postId], references: [project_id])
+  post       Project?         @relation(fields: [postId], references: [project_id])
   postId     String?
   timestamp  DateTime         @default(now())
 }
@@ -122,6 +117,7 @@ model Comment {
   content   String
   project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+   @@index([projectId], name: "Comment_projectId_index")
 }
 
 model Ratting {

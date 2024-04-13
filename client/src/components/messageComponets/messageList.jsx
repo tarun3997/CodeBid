@@ -1,7 +1,7 @@
 export default function MessageList({name,image, onClick, lastMessageTime,lastMessage}) {
     
     return <div className='flex justify-between items-center cursor-pointer hover:bg-slate-300 p-3 rounded-lg' onClick={onClick}>
-    <div className='w-11 h-11 rounded-full bg-blue-200'
+    <div className='w-11 h-11 rounded-full'
     style={{
         backgroundImage: `url(http://localhost:4000${image})`,
         backgroundSize: "cover",

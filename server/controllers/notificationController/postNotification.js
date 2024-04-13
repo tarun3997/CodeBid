@@ -33,7 +33,6 @@ async function likeNotification(req,res){
                 content: `${user.username} liked your post.`
             }
           }) 
-          // console.log(notification)
           res.status(201).json(notification);
         }
       }

@@ -82,6 +82,26 @@ export default function UserListTable({updateUserCount}) {
         console.error('Error deleting user:', e);
     }
 }
+  const changeRole= async(id, currentRole)=>{
+    try {
+      let newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
+      await axios.post(
+        'http://localhost:4000/admin/change-role',
+        {
+          id: id,
+          role: newRole 
+        },
+        {
+          headers: {
+            authToken: localStorage.getItem('authToken')
+          }
+        }
+      );
+      fetchUserList(); 
+    }catch(e){
+        console.error('Error in role change:', e);
+    }
+}
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
@@ -133,7 +153,7 @@ export default function UserListTable({updateUserCount}) {
             avatarProps={{radius: "full", size: "sm" , src: user.profileUrl}}
             classNames={{
               description: "text-default-500 text-[#b0b1c6]",
-              name:"text-white"
+              name:""
             }}
             description={user.email}
             name={cellValue}
@@ -144,14 +164,15 @@ export default function UserListTable({updateUserCount}) {
       case "username":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small text-white capitalize">{cellValue}</p>
+            <p className="text-bold text-small  capitalize">{cellValue}</p>
             <p className="text-bold text-tiny capitalize text-default-500">{user.location}</p>
           </div>
         );
       case "number":
         return (
-          <div className="text-white">
-            {cellValue}
+          <div className="flex flex-col">
+            <p className="text-bold text-small  capitalize">{cellValue}</p>
+            <p className="text-bold text-tiny capitalize text-default-500">{user.role}</p>
           </div>
         );
       case "actions":
@@ -164,7 +185,11 @@ export default function UserListTable({updateUserCount}) {
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
+                <DropdownItem onClick={()=> changeRole(user.id, user.role)}>
+                  {user.role === 'ADMIN' ?
+                  'Make User' : 'Make Admin'
+                }
+                  </DropdownItem>
                 <DropdownItem>Edit</DropdownItem>
                 <DropdownItem onClick={()=> deleteUser(user.email)}>Delete</DropdownItem>
               </DropdownMenu>
@@ -199,7 +224,7 @@ export default function UserListTable({updateUserCount}) {
             isClearable
             classNames={{
               base: "w-full sm:max-w-[44%]",
-              inputWrapper: "border-1 text-white ",
+              inputWrapper: "border-1  ",
             }}
             placeholder="Search by name..."
             size="sm"

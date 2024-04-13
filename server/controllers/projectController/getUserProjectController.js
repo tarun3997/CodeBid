@@ -8,9 +8,28 @@ const getAllUserProject = async (req, res) => {
     if (!claims) {
       return res.status(401).send({ message: "unauthenticated" });
     }
-    const userProject = await global.prisma.project.findMany({
+    const { username } = req.params;
+    let user;
+    if (username) {
+      user = await global.prisma.user.findUnique({
+        where: {
+          username,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+    } else {
+      user = await global.prisma.user.findUnique({
+        where: {
+          id: claims.id,
+        },
+      });
+    }
+    const userProjects = await global.prisma.project.findMany({
       where: {
-        creatorId: claims.id,
+        creatorId: user.id,
       },
       include: {
         creator: {
@@ -36,45 +55,34 @@ const getAllUserProject = async (req, res) => {
       },
     });
     // console.log(userProject)
-    const filterProject = await Promise.all(
-      userProject.map(async (project) => {
-        const totalLikes = project.likes.length;
-        const isLike = await global.prisma.likes.findUnique({
-          where: {
-            userId_projectId: {
-              userId: claims.id,
-              projectId: project.project_id,
-            }
-          },
-        });
-        const createdAt = new Date(project.createdAt);
-        const currentTime = new Date();
-        const timeDiff = currentTime - createdAt;
-        const seconds = Math.floor(timeDiff / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        let displayTime;
-        if (days >= 7) {
-          displayTime = `${Math.floor(days / 7)}w`;
-        } else if (days >= 1) {
-          displayTime = `${days}d`;
-        } else if (hours >= 1) {
-          displayTime = `${hours}h`;
-        } else {
-          displayTime = `${minutes}m`;
-        }
-        const commentsContent = project.comments.map(
-          (comment) => comment.content
-        );
+    const filterProjects = userProjects.map((project) => {
+      const totalLikes = project.likes.length;
+      const isLike = project.likes.some((like) => like.userId === claims.id);
+      const createdAt = new Date(project.createdAt);
+      const currentTime = new Date();
+      const timeDiff = currentTime - createdAt;
+      const seconds = Math.floor(timeDiff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+      let displayTime;
+      if (days >= 7) {
+        displayTime = `${Math.floor(days / 7)}w`;
+      } else if (days >= 1) {
+        displayTime = `${days}d`;
+      } else if (hours >= 1) {
+        displayTime = `${hours}h`;
+      } else {
+        displayTime = `${minutes}m`;
+      }
+      const commentsContent = project.comments.map((comment) => comment.content);
 
-        return {
+      return {
           projectId: project.project_id,
           createdAt: displayTime,
           title: project.title,
           description: project.description,
-          project_Price: project.project_Price,
-          isPaid: project.isPaid,
+          postLocation: project.postLocation,
           views: project.views,
           username: project.creator.username,
           name: project.creator.Profile.name,
@@ -85,10 +93,10 @@ const getAllUserProject = async (req, res) => {
           isLikes: isLike ? true : false,
           totalComment: commentsContent.length,
         };
-      })
-    );
-    // console.log(filterProject)
-    res.json({ userProject: filterProject });
+      });
+  
+    // console.log(filterProjects)
+    res.json({ userProject: filterProjects });
   } catch (e) {
     console.log(e);
     res.send({ message: "Getting error in fetching project" });

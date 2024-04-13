@@ -107,14 +107,14 @@ const clearSearch=()=>{
     <div className="flex w-full">
       <div className="w-[8%]"></div>
     <div className=" flex h-screen justify-center items-center gap-6 w-full">
-      <div className="w-[30%] h-4/5 rounded-xl p-4 gap-2 bg-white/50 flex flex-col overflow-auto">
+      <div className="w-[30%] h-4/5 rounded-xl p-4 gap-2  flex flex-col overflow-auto">
         <div className="flex justify-between">
           <span className="font-bold">Inbox</span>
           <Input
             isClearable
             classNames={{
               base: "w-full sm:max-w-[54%]",
-              inputWrapper: "border-1 text-white relative",
+              inputWrapper: "border-1 relative",
               placeholder: "text-gray-400 text-sm",
             }}
             placeholder="Search by username"
@@ -128,7 +128,7 @@ const clearSearch=()=>{
           />
         </div>
         {filteredUserList.length === 0 ? (
-        <div className="flex justify-center items-center text-white h-full">No users</div>
+        <div className="flex justify-center items-center  h-full">No users</div>
       ) : (
         filteredUserList.map((user, index) => (
           <MessageList
@@ -143,7 +143,7 @@ const clearSearch=()=>{
       )}
       </div>
       {userId === null ? (
-        <div className="w-[60%] h-4/5 bg-blue-500 rounded-xl p-5 flex justify-center items-center text-white">
+        <div className="w-[60%] h-4/5  rounded-xl p-5 flex justify-center items-center ">
           No User is Select
         </div>
       ) : (

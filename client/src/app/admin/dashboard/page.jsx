@@ -42,7 +42,7 @@ export default function Dashboard() {
     // };
     return <div>
         <div className="flex flex-col p-6 h-screen w-full">
-        <span className="text-white font-bold text-2xl">Dashbord</span>
+        <span className=" font-bold text-2xl">Dashbord</span>
         <UserDetails totalUsers={totalUsers} newUserCount={newUserCount} totalProject={projectCount}/>
         <UserList updateUserCount={fetchTotalUser}/>
         </div>

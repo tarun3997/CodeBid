@@ -11,11 +11,9 @@ import ProjectShowingCard from "@/components/projectShowingCard";
   export default function Profile() {
     const [profile, setProfile] = useState([]);
     const [projects , setProjects] = useState([]);
-    const [Follower, setFollower] = useState([])
     useEffect(()=>{
         fetchProfile(),
-        userProject(),
-        fetchFollower()
+        userProject()
     },[])
     const fetchProfile = async () => {
         try {
@@ -45,24 +43,12 @@ import ProjectShowingCard from "@/components/projectShowingCard";
           console.error("Error fetching user count:", e);
         }
       }
-      const fetchFollower = async ()=>{
-        try{
-          const response = await axios.get("http://localhost:4000/api/get-follower",{
-            headers:{
-              authToken: localStorage.getItem('authToken')
-            }
-          })
-          console.log(response.data)
-          setFollower(response.data)
-        }catch(e){
-          console.error("Error fetching user count:", e);
-        }
-      }
+     
       
     return (
       <div className="flex w-full">
       <div className="w-[10%]"></div>
-      <div className="bg-[#17151f] w-full h-screen flex">
+      <div className= "w-full h-screen flex">
         
         <div className="flex  justify-center items-center w-full flex-col px-4 ">
           <div className="flex">
@@ -71,21 +57,21 @@ import ProjectShowingCard from "@/components/projectShowingCard";
 
               <div className="flex flex-col gap-3">
                 <div className="flex gap-20">
-                  <div className="font-bold text-white text-sm">{profile.username}</div>
+                  <div className="font-bold  text-sm">{profile.username}</div>
                   
                 </div>
                 <div className="flex gap-4 text-sm">
-                  <div className="font-light text-white">
-                    <span className="text-sm text-white font-normal">{Follower.totalFollower}</span> Follower
+                  <div className="font-light ">
+                    <span className="text-sm font-normal">{profile.totalFollower}</span> Follower
                   </div>
-                  <div className="font-light text-sm text-white">
-                    <span className="text-sm text-white font-normal">{Follower.totalFollowing}</span> Following
+                  <div className="font-light text-sm ">
+                    <span className="text-sm font-normal">{profile.totalFollowing}</span> Following
                   </div>
                 </div>
-                <div className="text-white">{profile.name}</div>
+                <div className="">{profile.name}</div>
                 <div className="flex  flex-col gap-1">
-                  <div className="font-semibold text-white">Bio</div>
-                  <div className="max-w-[350px] text-white text-sm">
+                  <div className="font-semibold ">Bio</div>
+                  <div className="max-w-[350px]  text-sm">
                     Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                     Dolorum id
                   </div>
@@ -96,8 +82,8 @@ import ProjectShowingCard from "@/components/projectShowingCard";
               </div>
             </div>
           </div>
-          <div className="h-[0.5px] bg-white w-full mt-6 mb-3"></div>
-          <span className="font-normal mb-2 hover:font-semibold text-start text-white">Project</span>
+          <div className="h-[0.5px] dark:bg-white bg-black w-full mt-6 mb-3"></div>
+          <span className="font-normal mb-2 hover:font-semibold text-start ">Project</span>
           <div className="px-6 w-full flex gap-2 flex-wrap">
             {projects.map((userProjects, index)=>(
             <ProjectShowingCard key={index} project={userProjects} fetchProject={userProject}/>
