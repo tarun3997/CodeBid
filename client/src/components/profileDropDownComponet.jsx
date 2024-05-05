@@ -38,10 +38,8 @@ export default function ProfileDropdown({profileImage, email}) {
           <DropdownItem key="profile" onClick={handelRoute}>
             Profile
           </DropdownItem>
-          <DropdownItem key="team_settings"><Link href={'/profile/setting'}> Team Settings</Link></DropdownItem>
-          <DropdownItem key="analytics">
-            Analytics
-          </DropdownItem>
+          <DropdownItem key="settings"><Link href={'/profile/setting'}>Settings</Link></DropdownItem>
+          <DropdownItem key="analytics"><Link href={'/saved-post'}>Saved Post</Link></DropdownItem>
           <DropdownItem key="system">System</DropdownItem>
           <DropdownItem key="configurations">Configurations</DropdownItem>
           <DropdownItem key="help_and_feedback">

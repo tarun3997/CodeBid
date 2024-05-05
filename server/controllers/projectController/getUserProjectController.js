@@ -45,6 +45,7 @@ const getAllUserProject = async (req, res) => {
           },
         },
         likes: true,
+        Saved: true,
         comments: {
           select: {
             content: true,
@@ -58,6 +59,7 @@ const getAllUserProject = async (req, res) => {
     const filterProjects = userProjects.map((project) => {
       const totalLikes = project.likes.length;
       const isLike = project.likes.some((like) => like.userId === claims.id);
+      const isSaved = project.Saved.some((save) => save.userId === claims.id);
       const createdAt = new Date(project.createdAt);
       const currentTime = new Date();
       const timeDiff = currentTime - createdAt;
@@ -91,6 +93,7 @@ const getAllUserProject = async (req, res) => {
           PostImage: project.PostImage[0],
           likes: totalLikes,
           isLikes: isLike ? true : false,
+          isSaved: isSaved ? true : false,
           totalComment: commentsContent.length,
         };
       });

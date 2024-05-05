@@ -69,8 +69,10 @@ async function deleteUser(req, res){
                 email: req.body.email
             }
         })
+        console.log(deleteUser)
         res.json(deleteUser)
     }catch(e){
+        console.log(e)
         res.send({message:'Getting error in deleting user',e})
 
     }

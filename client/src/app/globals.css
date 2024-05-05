@@ -120,6 +120,7 @@
     min-width: 4rem;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     transition: max-width 0.2s ease-in-out;
   }
   

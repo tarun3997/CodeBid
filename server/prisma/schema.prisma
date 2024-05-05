@@ -29,6 +29,7 @@ model User {
   conversations         Conversation[] @relation("Participant")
   sentNotifications     Notification[] @relation("SentNotifications")
   receivedNotifications Notification[] @relation("ReceivedNotifications")
+  Saved                 Saved[]
 }
 
 enum Role {
@@ -62,6 +63,7 @@ model Project {
   updatedAt    DateTime       @updatedAt
   PostImage    PostImage[]
   Notification Notification[]
+  Saved        Saved[]
 }
 
 model PostImage {
@@ -100,6 +102,16 @@ model Views {
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Saved {
+  id        Int     @id @default(autoincrement())
+  userId    String
+  projectId String
+  project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+}
+
 model Likes {
   id        Int     @id @default(autoincrement())
   userId    String
@@ -117,7 +129,8 @@ model Comment {
   content   String
   project   Project @relation(fields: [projectId], references: [project_id], onDelete: Cascade)
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-   @@index([projectId], name: "Comment_projectId_index")
+
+  @@index([projectId], name: "Comment_projectId_index")
 }
 
 model Ratting {

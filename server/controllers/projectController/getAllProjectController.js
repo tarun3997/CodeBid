@@ -27,6 +27,7 @@ const getAllProjects= async(req, res)=>{
                     }
                 },
                 likes: true,
+                views: true,
                 comments: {
                     select:{
                         content: true,
@@ -40,7 +41,16 @@ const getAllProjects= async(req, res)=>{
         
         const filterProject = await Promise.all(getProject.map(async (project) => {
             const totalLikes = project.likes.length;
+            const totalViews = project.views.length;
             const isLike = await global.prisma.likes.findUnique({
+                where: {
+                    userId_projectId: {
+                        userId: claims.id,
+                        projectId: project.project_id
+                    }
+                }
+            });
+            const isSaved = await global.prisma.saved.findUnique({
                 where: {
                     userId_projectId: {
                         userId: claims.id,
@@ -88,7 +98,9 @@ const getAllProjects= async(req, res)=>{
                 location: project.creator.Profile.location,
                 PostImage: project.PostImage[0],
                 likes: totalLikes,
+                views: totalViews,
                 isLikes: isLike ? true : false,
+                isSaved: isSaved ? true : false,
                 totalComment: commentsContent.length,
                 isFollowing: isFollow ? true : false,
                 ownPost: claims.id === project.creator.id ? true : false

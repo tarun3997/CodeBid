@@ -58,7 +58,7 @@ const userChat =async(req,res)=>{
         res.status(200).send(formattedMessages);
 
     }catch(e){
-        console.error("Error fetching user count:", e);
+        console.error("Error fetching user chat:", e);
         res.status(500).send({ message: 'Internal server error' });
     }
 }

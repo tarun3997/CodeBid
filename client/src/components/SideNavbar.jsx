@@ -36,6 +36,7 @@ const CustomNavbar = () => {
     };
     isAdminLogin();
   }, []);
+  console.log(userRole);
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -120,7 +121,7 @@ const CustomNavbar = () => {
                 collapsed === true ? "items-center" : "items-start ml-4"
               } h-3/4 flex flex-col gap-6 items-start`}
             >
-              {userRole === "ADMIN" || userRole === "SuperAdmin" && (
+              {(userRole === "ADMIN" || userRole === "SuperAdmin") && (
                 <NavbarItems
                   icon={<MdDashboard size={22} />}
                   link={"/admin/dashboard"}
@@ -145,7 +146,7 @@ const CustomNavbar = () => {
                       title={"Search"}
                       isCollapsed={collapsed}
                     />
-                    </div>
+                  </div>
                 </PopoverTrigger>
                 <PopoverContent>
                   <SearchPopover />

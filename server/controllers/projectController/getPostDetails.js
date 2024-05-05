@@ -44,8 +44,7 @@ async function PostDetails(req, res) {
         PostImage: true,
       },
     });
-
-    const totalLikes = post.likes.length;
+    const totalLikes = post.likes ? post.likes.length : 0;
     const isLike = await global.prisma.likes.findUnique({
       where: {
         userId_projectId: {

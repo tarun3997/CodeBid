@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const router = useRouter();
 
     const submit = async(e)=>{
@@ -32,6 +33,7 @@ export default function Login() {
               router.push(data.role === 'ADMIN' ? '/admin' : '/');
             } else {
                 console.error('Invaild Creditail');
+                setError('Invaild Creditail')
             }
         }catch(e){
             console.error('Error occurred:', e);
@@ -53,7 +55,10 @@ export default function Login() {
             <CustomInput type={'email'} placeholder={""} onChanges={e=> setEmail(e.target.value)}/>
             <span className="text-white text-sm mt-4">Password*</span>
             <CustomInput type={'password'} placeholder={""} onChanges={e=> setPassword(e.target.value)}/>
+            <div className="flex justify-between items-center">
+            <span className="text-red-600 text-xs text-right p-2 cursor-pointer font-bold">{error}</span>
             <span className="text-white text-xs text-right p-2 cursor-pointer font-bold">Reset password?</span>
+            </div>
             <div className="h-5"></div>
             <CustomBtn value={"Login"} />
             <div className="flex">

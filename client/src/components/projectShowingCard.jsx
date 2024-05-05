@@ -1,4 +1,4 @@
-import { BiDotsVerticalRounded } from "react-icons/bi"; 
+import { BiBookmark, BiDotsVerticalRounded } from "react-icons/bi"; 
 import { AiFillHeart } from "react-icons/ai";
 import {
   FaHeart,
@@ -17,12 +17,15 @@ import { DeleteDocumentIcon } from "./DropdownIcon/DeleteDocumentIcon";
 import DeletePost from "./ModelComponents/DeletePost";
 import { useDisclosure } from "@nextui-org/react";
 import EditPost from "./ModelComponents/EditProfile";
+import { savedPostApi } from "@/api/postApi";
+import { BsFillBookmarkFill } from "react-icons/bs";
 
 
 
 export default function ProjectShowingCard({ project, fetchProject }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isProjectLike, setProjectLike] = useState(project.isLikes);
+  const [isPostSave, setPostSave] = useState(project.isSaved);
   const router = useRouter();
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [modelName, setModelName] = useState("")
@@ -44,6 +47,16 @@ export default function ProjectShowingCard({ project, fetchProject }) {
         }
       );
       setProjectLike(!isProjectLike);
+      fetchProject();
+    } catch (e) {
+      console.error("Error creating like:", e);
+    }
+  };
+  const savePost = async () => {
+    try {
+      const projectId = project.projectId;
+      await savedPostApi(projectId);
+      setPostSave(!isPostSave);
       fetchProject();
     } catch (e) {
       console.error("Error creating like:", e);
@@ -152,9 +165,16 @@ export default function ProjectShowingCard({ project, fetchProject }) {
 
           <span className=" truncate font-bold w-3/5 p-1">{project.title}</span>
           <div className="flex">
-            <div className="w-8 h-8 mr-2 bg-slate-50 rounded-full flex items-center justify-center">
+            {/* <div className="w-8 h-8 mr-2 bg-slate-50 rounded-full flex items-center justify-center">
               <FaRegBookmark className="h-4 w-4 text-blue-500" />
-            </div>
+            </div> */}
+            <div onClick={savePost} className="cursor-pointer w-8 h-8 mr-2 bg-slate-50 rounded-full flex items-center justify-center">
+          {isPostSave ? (
+            <BsFillBookmarkFill size={16}  />
+          ) : (
+            <BiBookmark size={16} color="blue"/>
+          )}
+        </div>
             <div
               onClick={likePost}
               className="w-8 h-8 bg-slate-50 rounded-full flex items-center justify-center"

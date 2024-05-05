@@ -18,6 +18,42 @@ export async function likePostApi(projectId) {
         throw e;
     }
 }
+export async function viewPostApi(projectId) {
+    try{
+        await axios.post(
+            "http://localhost:4000/api/view",
+            {
+              projectId,
+            },
+            {
+              headers: {
+                authToken: localStorage.getItem("authToken"),
+              },
+            }
+          );
+    }catch(e){
+        console.error("Error creating like:", e);
+        throw e;
+    }
+}
+export async function savedPostApi(projectId) {
+    try{
+        await axios.post(
+            "http://localhost:4000/api/saved",
+            {
+              projectId,
+            },
+            {
+              headers: {
+                authToken: localStorage.getItem("authToken"),
+              },
+            }
+          );
+    }catch(e){
+        console.error("Error creating like:", e);
+        throw e;
+    }
+}
 
 export async function handelNotificationApi(id, postId){
     try{
