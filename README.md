@@ -10,6 +10,7 @@ Node.js & npm: Download & Install Node.js
 MySQL Workbench: Download & Install MySQL Workbench
 Yarn (optional): Download & Install Yarn
 Getting Started
+
 Clone the repository:
 
 bash
@@ -19,11 +20,11 @@ git clone https://github.com/tarun3997/CodeBid.git
 
 Install dependencies for both client and server:
 
-bash
-
-Copy code
 # Navigate to the client folder
+
 cd client
+
+# Install dependencies
 npm install
 # or
 yarn
@@ -42,8 +43,8 @@ plaintext
 
 DATABASE_URL=""
 
-ACCESS_TOKEN_SECRET = 1e87b249851c88a227001359d95f66f09d60dc5511cb682c74dbbab4b3a4a95fa64bc4781d7ac1f829b945669d1248376fd0b55e8a66f4062f1081cea23ba78
-Replace your_database_url_here with the connection URL for your MySQL database.
+ACCESS_TOKEN_SECRET = 
+Replace your_database_url_and_ACCESS_TOKEN_SECRET_here with the connection URL for your MySQL database.
 
 Run migrations:
 
@@ -55,13 +56,12 @@ This will apply any pending migrations to your database.
 
 Start the development server:
 
-cd ../client
 npm run dev
 # or
 yarn dev
 
 # Start the server
-cd ../server
+
 npm start
 
 Your Next.js app should now be running on http://localhost:3000.
