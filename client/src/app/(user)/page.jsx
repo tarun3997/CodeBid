@@ -20,9 +20,10 @@ export default function Home() {
     const token = localStorage.getItem('authToken');
       if (!token) {
         router.push('/welcome');
+      }else{
+        fetchProfile();
+        fetchProjects();
       }
-    fetchProfile();
-    fetchProjects();
   }, []);
 
   const fetchProfile = async () => {

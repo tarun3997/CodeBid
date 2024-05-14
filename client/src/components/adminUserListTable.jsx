@@ -150,7 +150,7 @@ export default function UserListTable({updateUserCount}) {
       case "name":
         return (
           <User 
-            avatarProps={{radius: "full", size: "sm" , src: user.profileUrl}}
+            avatarProps={{radius: "full", size: "sm" , src: `http://localhost:4000${user.profileUrl}`}}
             classNames={{
               description: "text-default-500 text-[#b0b1c6]",
               name:""

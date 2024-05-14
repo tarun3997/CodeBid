@@ -49,11 +49,12 @@ async function getAllUser(req, res){
                 username: user.username,
                 number: user.mobile_number,
                 location: user.Profile.location,
-                profileUrl: user.Profile.profileUrl,
+                profileUrl: `/profileImages/${user.Profile.profileUrl}`,
                 createdAt: formattedDate,
                 role:user.role
             };
         });
+        // console.log(filterUserList)
         res.json({ userList : filterUserList});
     }catch(e){
         console.log(e)
